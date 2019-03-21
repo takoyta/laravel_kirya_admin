@@ -1,0 +1,102 @@
+/* static */
+select.js-select2,
+.select2-hidden-accessible {
+    display: none;
+}
+.select2-container {
+    display: inline-block;
+    border: 1px solid #bacad6;
+    border-radius: .5rem;
+    background: white;
+    z-index: 1000;
+}
+.select2.select2-container {
+    /* Style for only static select2 */
+    width: 100%;
+    max-width: 400px;
+}
+
+.select2-selection {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 2.2rem;
+    padding-left: 0.75rem;
+    padding-right: 1.75rem;
+    cursor: pointer;
+    width: 100%
+}
+.select2-selection__arrow {
+    position: absolute;
+    top: calc(50% - 4px);
+    right: 0.75rem;
+    transform: rotate(225deg);
+}
+.select2-selection__arrow::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    box-shadow: inset 2px 2px #a3858e;
+}
+.select2-container--open .select2-selection__arrow {
+    top: calc(50% - 1px);
+    transform: rotate(45deg);
+}
+.select2-container--disabled {
+    user-select: none;
+    background: #e5e5e5;
+    color: #a3858e;
+}
+.select2-container--disabled .select2-selection {
+    cursor: default;
+}
+
+
+/* dropdown */
+.select2-dropdown {
+    display: block;
+    background: white;
+    border-radius: .5rem;
+}
+.select2-search {
+    display: block;
+    padding: 6px;
+}
+.select2-search--hide {
+    display: none;
+}
+.select2-search__field {
+    width: 100%;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    height: 2.2rem;
+    border-radius: .5rem;
+    border: 1px solid #bacad6;
+}
+.select2-search__field:active,
+.select2-search__field:focus {
+    outline: none;
+    box-shadow: 0 0 7px #4099de;
+}
+.select2-results__options {
+    margin: 0;
+    padding: 0;
+    max-height: 250px;
+    overflow-y: auto;
+}
+.select2-results__option {
+    cursor: pointer;
+    padding: 0.25rem 0.75rem;
+}
+.select2-results__option[aria-selected=true] {
+    background: #ede5f5;
+}
+.select2-results__option:hover {
+    background: #ced5ff;
+}
+.select2-results__option[aria-disabled=true] {
+    user-select: none;
+    background: #e5e5e5;
+}

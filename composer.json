@@ -1,0 +1,30 @@
+{
+    "name": "kirya-dev/admin",
+    "description": "A Laravel Admin",
+    "keywords": [
+        "laravel",
+        "admin"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=7.2.0",
+        "laravel/framework": ">=5.8.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "KiryaDev\\Admin\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "KiryaDev\\Admin\\ServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
