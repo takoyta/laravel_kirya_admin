@@ -5,15 +5,7 @@
 
 @section('content')
 
-    @component('admin::resource.index-partials.list', compact('fields', 'filterProvider', 'paginator'))
-        @slot('actionSlot')
-            @foreach($actions as $action)
-                {!! $action->display() !!}
-                <div class="pr-1"></div>
-            @endforeach
-
-            {!! $resource->makeActionLink('create')->display() !!}
-        @endslot
+    @component('admin::resource.index-partials.list', compact('fields', 'filterProvider', 'actions', 'paginator'))
     @endcomponent
 
 @endsection

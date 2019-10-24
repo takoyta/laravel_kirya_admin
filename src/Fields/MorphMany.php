@@ -35,8 +35,6 @@ class MorphMany extends HasMany
             ->filter(function ($field) {
                 return ! ($field instanceof MorphTo && $field->name === $this->reverseName); //exclude reverse relation
             })
-            ->add(
-                ActionsField::with($this->relatedResource->getIndexActions())
-            );
+            ->add($this->relatedResource->getIndexActionsField());
     }
 }

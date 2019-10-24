@@ -1,8 +1,8 @@
 <?php
-namespace KiryaDev\Admin\Resource;
+namespace KiryaDev\Admin\Traits;
+
 
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Auth\Access\AuthorizationException;
 
 trait Authorizable
 {

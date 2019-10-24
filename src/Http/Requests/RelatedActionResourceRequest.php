@@ -12,29 +12,27 @@ use KiryaDev\Admin\Fields\HasMany;
  * @property-read  string  $field_type
  * @property-read  string  $field_name
  */
-class ActionResourceRequest extends DetailResourceRequest
+class RelatedActionResourceRequest extends ActionResourceRequest
 {
     public function authorize()
     {
         $ability = Str::camel($this->action).'Action';
 
         return $this
-            ->resource()
+            ->relatedResource()
             ->authorizedTo($ability, $this->forMany() ? null : $this->object());
     }
 
-    public function forMany()
+    public function relatedResource()
     {
-        return 'all' === $this->id;
+        return $this->resolveHasManyField()->relatedResource;
     }
 
     /**
-     * @return \KiryaDev\Admin\Actions\Actionable
+     * @return HasMany
      */
-    public function resolveAction()
+    public function resolveHasManyField()
     {
-        $class = Core::resolveActionClassName($this->action);
-
-        return new $class;
+        return $this->resource()->resolveField(HasMany::class, $this->field_name);
     }
 }

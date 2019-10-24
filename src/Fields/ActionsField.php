@@ -21,9 +21,12 @@ class ActionsField
         return (new static)->add($actions);
     }
 
-    public function add($actions)
+    public function add($action)
     {
-        $this->actions = array_merge($this->actions, Arr::wrap($actions));
+        $this->actions = array_merge(
+            $this->actions,
+            $action instanceof \Illuminate\Support\Collection ? $action->all() : Arr::wrap($action)
+        );
 
         return $this;
     }

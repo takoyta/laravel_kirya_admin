@@ -8,24 +8,23 @@ class BelongsToMany extends HasMany
     /**
      * @param  \KiryaDev\Admin\Resource\Resource  $resource
      * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return array
+     * @return object
      */
-    protected function with($resource, $object)
+    protected function actions($resource, $object)
     {
-        $ajaxUrl = null;
-        $relatedResource = $this->relatedResource;
+        $attachAbility = 'attach'.class_basename($this->relatedResource->model);
+        $attachTitle = $this->relatedResource->actionLabel('Attach');
 
-        $ability = 'attach'.class_basename($this->relatedResource->model);
+        $actions = $this->relatedResource
+            ->getActionLinksForHandleMany('relatedAction', ['field_type' => 'many-many', 'field_name' => $this->name])
+            ->add(
+                $resource
+                    ->makeActionLink('attachRelated', $attachAbility, $attachTitle)
+                    ->param('related_resource', $this->relatedResource->uriKey())
+                    ->addClass('js-attach-related')
+            );
 
-        if ($resource->authorizedTo($ability, $object)) {
-            $ajaxUrl = $resource
-                ->makeUrl('attachRelated', [
-                    'id' => $object->getKey(),
-                    'related_resource' => $this->relatedResource->uriKey()
-                ]);
-        }
-
-        return compact('ajaxUrl', 'relatedResource');
+        return $this->wrapActions($actions, $object);
     }
 
     /**
@@ -42,17 +41,16 @@ class BelongsToMany extends HasMany
         return $this
             ->relatedResource
             ->getIndexFields()
-            ->add(
-                ActionsField::with($this->relatedResource->getIndexActions())
-                    ->add(
-                        $resource
-                        ->makeActionLink('detachRelated', $ability, $detachTitle)
-                        ->objectKey('related_id')
-                        ->param('id', $object->getKey())
-                        ->param('related_resource', $this->relatedResource->uriKey())
-                        ->displayAsLink()
-                        ->icon('thumbtack')
-                    )
+            ->add($this->relatedResource
+                ->getIndexActionsField()
+                ->add($resource
+                    ->makeActionLink('detachRelated', $ability, $detachTitle)
+                    ->objectKey('related_id')
+                    ->param('id', $object->getKey())
+                    ->param('related_resource', $this->relatedResource->uriKey())
+                    ->displayAsLink()
+                    ->icon('thumbtack')
+                )
             );
     }
 }

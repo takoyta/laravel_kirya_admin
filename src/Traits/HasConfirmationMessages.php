@@ -1,5 +1,5 @@
 <?php
-namespace KiryaDev\Admin\Resource;
+namespace KiryaDev\Admin\Traits;
 
 
 use Illuminate\Support\Arr;

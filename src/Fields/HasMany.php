@@ -11,8 +11,6 @@ class HasMany extends Panel
 {
     protected $perPage = 5;
 
-    public $addAction;
-
     public $name;
 
     /**
@@ -41,10 +39,7 @@ class HasMany extends Panel
 
         $fields = $this->fields($resource, $object);
 
-        /** @var \Illuminate\Database\Eloquent\Relations\HasMany $relation */
-        $relation = $object->{$this->name}();
-
-        $filterProvider = new FilterProvider($relation, $this->relatedResource, $this->name.'_');
+        [$relation, $filterProvider] = $this->getRelationAndFilterProvider($object);
 
         $paginator = new Paginator($relation, $this->perPage, $this->name.'_', $filterProvider->query());
 
@@ -56,49 +51,70 @@ class HasMany extends Panel
             'filterProvider',
             'paginator'
         ))
-            ->with($this->with($resource, $object));
+            ->with('actions', $this->actions($resource, $object));
     }
 
-    /**
-     * Set action to add new related resource.
-     *
-     * @param  \KiryaDev\Admin\Actions\Actionable $action
-     * @return $this
-     */
-    public function addAction($action)
+    public function getRelationAndFilterProvider($object)
     {
-        $this->addAction = $action;
-
-        return $this;
+        return [$this->getRelation($object, $filter = $this->getFilterProvider()), $filter];
     }
 
-    /**
-     * Default add action above list of related objects.
-     *
-     * @param  \KiryaDev\Admin\Resource\Resource    $resource
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return array
-     */
-    protected function defaultAddAction($resource, $object)
+    public function getRelation($object, FilterProvider $filter = null)
     {
-        $ablity = 'add'.class_basename($this->relatedResource->model);
+        $filter = $filter ?? $this->getFilterProvider();
 
-        return $resource
-            ->makeActionLink('addRelated', $ablity, $this->relatedResource->actionLabel('Add'))
-            ->param('id', $object->getKey())
-            ->param('related_resource', $this->relatedResource->uriKey());
+        return tap($object->{$this->name}(), function ($query) use ($filter) {
+            $filter->apply($query);
+        });
+    }
+
+    private function getFilterProvider()
+    {
+        return new FilterProvider($this->relatedResource, $this->name.'_');
     }
 
     /**
      * @param  \KiryaDev\Admin\Resource\Resource    $resource
      * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return array
+     * @return object
      */
-    protected function with($resource, $object)
+    protected function actions($resource, $object)
     {
-        $addAction = $this->addAction ?? $this->defaultAddAction($resource, $object);
+        $addAbility = 'add'.class_basename($this->relatedResource->model);
+        $addTitle = $this->relatedResource->actionLabel('Add');
 
-        return compact('addAction');
+        $actions = $this->relatedResource
+            ->getActionLinksForHandleMany('relatedAction', ['field_type' => 'many', 'field_name' => $this->name, 'resource' => $resource->uriKey()])
+            ->add(
+                $resource
+                    ->makeActionLink('addRelated', $addAbility, $addTitle)
+                    ->param('related_resource', $this->relatedResource->uriKey())
+            );
+
+        return $this->wrapActions($actions, $object);
+    }
+
+    /**
+     * Wrap action into anonymous class for displaying from template.
+     *
+     * @param  array  $actions
+     * @param  mixed  $object
+     * @return \Illuminate\Support\Collection
+     */
+    protected function wrapActions($actions, $object)
+    {
+        return collect($actions)->map(function ($action) use ($object) {
+            return tap(new class {
+                public $action;
+                public $object;
+                public function display() {
+                    return $this->action->display($this->object);
+                }
+            }, function ($wrapper) use ($action, $object) {
+                $wrapper->action = $action;
+                $wrapper->object = $object;
+            });
+        });
     }
 
     /**
@@ -119,10 +135,7 @@ class HasMany extends Panel
             ->filter(function ($field) use ($resource) {
                 return ! ($field instanceof BelongsTo && $field->relatedResource === $resource); //exclude reverse relation
             })
-            ->add(
-                ActionsField::with($this->relatedResource->getIndexActions())
-            )
-        ;
+            ->add($this->relatedResource->getIndexActionsField());
     }
 
     public function displayForm($object, $resource)

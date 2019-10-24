@@ -10,7 +10,7 @@ class ActionLink
     /**
      * @var string
      */
-    protected $action;
+    protected $route;
 
     /**
      * @var string
@@ -61,16 +61,16 @@ class ActionLink
      * Action constructor.
      *
      * @param  \KiryaDev\Admin\Resource\Resource  $resource
-     * @param  string       $action
+     * @param  string       $route
      * @param  string|null  $ability
      * @param  string|null  $title
      */
-    public function __construct($resource, $action, $ability = null, $title = null)
+    public function __construct($resource, $route, $ability = null, $title = null)
     {
         $this->resource = $resource;
 
-        $this->action = $action;
-        $this->ability = $ability ?? $action;
+        $this->route = $route;
+        $this->ability = $ability ?? $route;
         $this->altTitle = $title ?? $this->resource->actionLabel(ucfirst($this->ability));
     }
 
@@ -85,7 +85,7 @@ class ActionLink
         }
 
         $url = $this->resource->authorizedTo($this->ability, $object)
-            ? $this->resource->makeUrl($this->action, $this->params)
+            ? $this->resource->makeUrl($this->route, $this->params)
             : null;
 
         $title = $this->icon ?? $this->altTitle;

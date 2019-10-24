@@ -11,7 +11,12 @@ class ResourceDetailController
     {
         $resource = $request->resource();
 
-        $actions = $resource->getDetailActions(); //todo
+        $actions = $resource
+            ->getActionLinksForHandleOneFromDetail()
+            ->merge([
+                $resource->makeActionLink('edit', 'update')->icon('edit'), // fixme: change altTitle from Update -> Edit
+                $resource->makeActionLink('delete')->icon('trash'),
+            ]);
 
         $panels = $resource->getDetailPanels();
 

@@ -1,28 +1,21 @@
 <h3 class="panel-title">{!! __($title) !!}</h3>
 
 
-@php($id = 'attach-'.$relatedResource->uriKey())
-
-
-@component('admin::resource.index-partials.list', compact('fields', 'filterProvider', 'paginator'))
-    @if ($ajaxUrl)
-        @slot('actionSlot')
-            <a href="#{!! $id !!}" id="{!! $id !!}" class="panel-button">{!! $relatedResource->actionLabel('Attach') !!}</a>
-        @endslot
-    @endif
+@component('admin::resource.index-partials.list', compact('fields', 'filterProvider', 'actions', 'paginator'))
 @endcomponent
 
 
 @push('scripts')
     <script>
         $(function () {
-            var ajaxUrl = '{!! $ajaxUrl !!}';
+            var $attachBtn = $('.js-attach-related');
 
-            var $attachBtn = $('#{!! $id !!}');
+            var ajaxUrl = $attachBtn.attr('href');
+            $attachBtn.attr('href', '#')
 
             $attachBtn.click(function () {
                 $attachBtn.hide();
-                
+
                 $.get(ajaxUrl).then(function (data) {
                     var options = data.data;
 
@@ -31,7 +24,7 @@
                     });
 
                     $('<select>')
-                        .append($('<option/>').text("{!! $relatedResource->actionLabel('Select') !!}..."))
+                        .append($('<option/>').text($attachBtn.attr('title') + '...'))
                         .append($options)
                         .change(function () {
                             var value = $(this).val();

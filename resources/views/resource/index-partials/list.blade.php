@@ -6,11 +6,12 @@
 
 @php($showSearchForm = ! empty($filterProvider->searchField))
 @php($showFilterForm = ! empty($filterProvider->fields))
+@php($showActions    = ! empty($actions))
 
 
 <div class="panel p-0">
 
-    @if ($showSearchForm || $showFilterForm || isset($actionSlot))
+    @if ($showSearchForm || $showFilterForm || $showActions)
         <div class="panel-header d-flex justify-content-between">
             <form action="" method="GET" class="d-flex" id="{!! $formId !!}">
                 @if ($showFilterForm)
@@ -27,9 +28,10 @@
             </form>
 
             <div class="d-flex">
-                @isset($actionSlot)
-                    {!! $actionSlot !!}
-                @endisset
+                @foreach($actions as $action)
+                    <div class="pr-1"></div>
+                    {!! $action->display() !!}
+                @endforeach
             </div>
         </div>
     @endif

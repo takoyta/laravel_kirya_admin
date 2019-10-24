@@ -15,18 +15,18 @@ class ResourceIndexController
     {
         $resource = $request->resource();
 
-        $actions = $resource->actions();
+        $actions = $resource
+            ->getActionLinksForHandleMany('action', ['id' => 'all'])
+            ->add($resource->makeActionLink('create'));
 
         $fields = $resource
             ->getIndexFields()
-            ->add(
-                ActionsField::with($resource->getIndexActions())
-            );
-
-        $query = $resource->indexQuery();
+            ->add($resource->getIndexActionsField());
 
         // Search & Filter
-        $filterProvider = new FilterProvider($query, $resource);
+        $filterProvider = (new FilterProvider($resource))->apply(
+            $query = $resource->indexQuery()
+        );
 
         // Paginate results
         $paginator = new Paginator($query, $resource->perPage, null, $filterProvider->query());

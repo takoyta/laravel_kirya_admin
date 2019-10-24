@@ -11,13 +11,16 @@ use KiryaDev\Admin\Fields\HasMany;
 use KiryaDev\Admin\Fields\MorphTo;
 use KiryaDev\Admin\Fields\MorphMany;
 use KiryaDev\Admin\Fields\BelongsTo;
-use KiryaDev\Admin\Traits\HasUriKey;
 use KiryaDev\Admin\Fields\FieldElement;
-use KiryaDev\Admin\Fields\BelongsToMany;
+
+use KiryaDev\Admin\Traits;
 
 abstract class Resource
 {
-    use Authorizable, HasUriKey, HasConfirmationMessages;
+    use Traits\HasUriKey,
+        Traits\Authorizable,
+        Traits\ResourceActions,
+        Traits\HasConfirmationMessages;
 
     public $model;
 
@@ -83,14 +86,6 @@ abstract class Resource
     abstract public function fields();
 
     /**
-     * @return \KiryaDev\Admin\Actions\Actionable[]
-     */
-    public function actions()
-    {
-        return [];
-    }
-
-    /**
      * @return \KiryaDev\Admin\Filters\Filterable[]
      */
     public function filters()
@@ -141,27 +136,6 @@ abstract class Resource
         return collect($this->getFieldsOnce())
             ->whereInstanceOf(FieldElement::class)
             ->where('showOnIndex');
-    }
-
-    /**
-     * @return \KiryaDev\Admin\Resource\ActionLink[]
-     */
-    public function getIndexActions()
-    {
-        return [
-            $this->makeActionLink('detail', 'view')->icon('eye')->displayAsLink()
-        ];
-    }
-
-    /**
-     * @return \KiryaDev\Admin\Resource\ActionLink[]
-     */
-    public function getDetailActions()
-    {
-        return [
-            $this->makeActionLink('edit', 'update')->icon('edit'), // fixme: change altTitle from Update -> Edit
-            $this->makeActionLink('delete')->icon('trash'),
-        ];
     }
 
     /**
@@ -291,21 +265,10 @@ abstract class Resource
      *
      * @return string
      */
-    public static function makeUrl($action, $params = [])
+    public static function makeUrl($route, $params = [])
     {
-        $params['resource'] = static::uriKey();
+        $params['resource'] = $params['resource'] ?? static::uriKey();
 
-        return route('admin.' . $action, $params, true);
-    }
-
-    /**
-     * @param  string  $action
-     * @param  string  $ability
-     * @param  string  $title
-     * @return \KiryaDev\Admin\Resource\ActionLink
-     */
-    public function makeActionLink($action, $ability = null, $title = null)
-    {
-        return new ActionLink($this, $action, $ability, $title);
+        return route('admin.' . $route, $params, true);
     }
 }

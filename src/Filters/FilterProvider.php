@@ -13,6 +13,11 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 class FilterProvider
 {
     /**
+     * @var Resource
+     */
+    private $resource;
+
+    /**
      * @var Fields\Text
      */
     public $searchField;
@@ -40,53 +45,21 @@ class FilterProvider
 
     /**
      * FilterProvider constructor.
-     *
-     * @param  Builder|Relation  $builder
+
      * @param  Resource          $resource
      * @param  string            $prefix
-     * @param  string[]          $query
+     * @param  string[]          $values
      */
-    public function __construct($builder, Resource $resource, string $prefix = null, array $query = [])
+    public function __construct(Resource $resource, string $prefix = null, array $values = [])
     {
+        $this->resource = $resource;
         $this->prefix = $prefix;
 
         if (! empty($resource->search)) {
             $this->searchField = Fields\Text::make('Search', $this->prefixed('search'));
         }
 
-        $this->values = $query;
-
-        // Retrive search value
-        if ($this->searchField && $term = $this->query($name = $this->searchField->name)) {
-            // Apply
-            Search::deepSearch($builder, $resource->search, $term);
-
-            $this->values[$name] = $term;
-        }
-
-        // Retrive filters values
-        foreach ($resource->filters() as $filter) {
-            $this->fields[] = $field = $filter->field();
-
-            if ($field instanceof Fields\Select) {
-                $field->addNullOption();
-            }
-
-            $name = $field->name = $this->prefixed($field->name);
-
-            if ($value = $this->query($name)) {
-                if ($fn = $field->fillCallback) {
-                    $fn($object = new \stdClass, $value); // fixme
-
-                    $value = $object->{$name};
-                }
-                $this->values[$name] = $value;
-
-                // Apply
-                $filter->apply($builder, $value);
-                $this->appliedFiltersCount++;
-            }
-        }
+        $this->values = $values;
     }
 
     /**
@@ -124,5 +97,48 @@ class FilterProvider
         }
 
         return Arr::only(request()->query(), array_keys($this->values));
+    }
+
+    /**
+     * @param  Builder|Relation  $builder
+     * @return mixed
+     */
+    public function apply($builder)
+    {
+        $this->appliedFiltersCount = 0;
+
+        // Retrive search value
+        if ($this->searchField && $term = $this->query($name = $this->searchField->name)) {
+            // Apply
+            Search::deepSearch($builder, $this->resource->search, $term);
+
+            $this->values[$name] = $term;
+        }
+
+        // Retrive filters values
+        foreach ($this->resource->filters() as $filter) {
+            $this->fields[] = $field = $filter->field();
+
+            if ($field instanceof Fields\Select) {
+                $field->addNullOption();
+            }
+
+            $name = $field->name = $this->prefixed($field->name);
+
+            if ($value = $this->query($name)) {
+                if ($fn = $field->fillCallback) {
+                    $fn($object = new \stdClass, $value); // fixme
+
+                    $value = $object->{$name};
+                }
+                $this->values[$name] = $value;
+
+                // Apply
+                $filter->apply($builder, $value);
+                $this->appliedFiltersCount++;
+            }
+        }
+
+        return $this;
     }
 }
