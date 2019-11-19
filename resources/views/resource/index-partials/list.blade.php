@@ -48,9 +48,9 @@
 
                     @if($field->sortable)
                         <span class="d-inline-flex flex-column align-middle pl-1">
-                            <a href="{!! $paginator->orderUrl($field, 'asc') !!}" class="sort-arrow sort-arrow--asc @if($paginator->isOrderedBy($field, 'asc')) active @endif"></a>
+                            <a href="{{ $paginator->orderUrl($field, 'asc') }}" class="sort-arrow sort-arrow--asc @if($paginator->isOrderedBy($field, 'asc')) active @endif"></a>
 
-                            <a href="{!! $paginator->orderUrl($field, 'desc') !!}" class="sort-arrow sort-arrow--desc @if($paginator->isOrderedBy($field, 'desc')) active @endif"></a>
+                            <a href="{{ $paginator->orderUrl($field, 'desc') }}" class="sort-arrow sort-arrow--desc @if($paginator->isOrderedBy($field, 'desc')) active @endif"></a>
                         </span>
                     @endif
                 </th>

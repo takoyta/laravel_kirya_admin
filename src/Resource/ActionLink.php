@@ -95,7 +95,7 @@ class ActionLink
             return $url
                 ? sprintf(
                     '<a href="%s" class="%s" title="%s">%s</a>',
-                    $url,
+                    e($url),
                     ($this->icon ? 'a text-muted ' : '').implode(' ', $this->classes),
                     $this->altTitle,
                     $title
@@ -105,7 +105,7 @@ class ActionLink
 
         // As Button
         return $url
-            ? sprintf('<a href="%s" class="panel-button %s" title="%s">%s</a>', $url, implode(' ', $this->classes), $this->altTitle, $title)
+            ? sprintf('<a href="%s" class="panel-button %s" title="%s">%s</a>', e($url), implode(' ', $this->classes), $this->altTitle, $title)
             : sprintf('<a class="panel-button %s" disabled>%s</a>', implode(' ', $this->classes), $title);
     }
 

@@ -3,7 +3,7 @@
         @if($user = auth()->user())
             <span>{!! $user->name !!}</span>
 
-            <a href="{!! route('admin.logout') !!}" title="{!! __('Logout') !!}" class="a">
+            <a href="{{ route('admin.logout') }}" title="{!! __('Logout') !!}" class="a">
                 <i class="fa fa-sign-out-alt"></i>
             </a>
 

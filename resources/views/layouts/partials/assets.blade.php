@@ -5,9 +5,9 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css" rel="stylesheet" />
 
-    <link href="{!! asset('vendor/admin/select2.css') !!}" rel="stylesheet" />
+    <link href="{{ asset('vendor/admin/select2.css') }}" rel="stylesheet" />
 
-    <link href="{!! asset('vendor/admin/stylesheets.css') !!}" rel="stylesheet" />
+    <link href="{{ asset('vendor/admin/stylesheets.css') }}" rel="stylesheet" />
 @endprepend
 
 
