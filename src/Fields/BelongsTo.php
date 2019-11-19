@@ -51,4 +51,9 @@ class BelongsTo extends FieldElement
     {
         return optional($object->{$this->name})->getKey();
     }
+
+    public function getAllowClear()
+    {
+        return ! $this->disabled && false === array_search('required', $this->creationRules); // fixme: can also updateRules
+    }
 }

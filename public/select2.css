@@ -40,6 +40,17 @@ select.js-select2,
     height: 6px;
     box-shadow: inset 2px 2px #a3858e;
 }
+.select2-selection__clear {
+    position: absolute;
+    top: calc(50% - 17px);
+    right: 1.5rem;
+    color: red;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+.select2-selection__placeholder {
+    color: #a3858e;
+}
 .select2-container--open .select2-selection__arrow {
     top: calc(50% - 1px);
     transform: rotate(45deg);

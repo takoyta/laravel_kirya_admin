@@ -22,7 +22,7 @@
 
             $select.select2({
                 width: null,
-                allowClear: false,
+                allowClear: @json($field->getAllowClear()),
                 ajax: {
                     url: '{!! $ajax_search_url !!}',
                     delay: 250,
