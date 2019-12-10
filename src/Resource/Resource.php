@@ -17,7 +17,8 @@ use KiryaDev\Admin\Traits;
 
 abstract class Resource
 {
-    use Traits\HasUriKey,
+    use Traits\HasLabel,
+        Traits\HasUriKey,
         Traits\Authorizable,
         Traits\ResourceActions,
         Traits\HasConfirmationMessages;
@@ -227,16 +228,6 @@ abstract class Resource
         if (! $object instanceof Model) $object = $this->findModel($object);
 
         return $object->{$this->title};
-    }
-
-    /**
-     * Convert resource classname to title case.
-     *
-     * @return string
-     */
-    public static function label()
-    {
-        return Str::title(Str::snake(class_basename(static::class), ' '));
     }
 
     /**

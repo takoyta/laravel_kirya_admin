@@ -10,6 +10,9 @@ use KiryaDev\Admin\Http\Requests\RelatedActionResourceRequest;
 
 class ResourceActionController
 {
+    use HasConfirmation;
+
+
     /**
      * @param  ActionResourceRequest  $request
      * @return mixed
@@ -18,6 +21,14 @@ class ResourceActionController
     {
         $resource = $request->resource();
         $action = $request->resolveAction();
+
+        if ($action->requireConfirmation && ! $this->isConfirmed($request)) {
+            $backUrl = $request->forMany()
+                ? $resource->makeUrl('list')
+                : $resource->makeUrl('detail', ['id' => $request->id]);
+
+            return $this->renderConfirm($action->label(), $backUrl);
+        }
 
         if ($request->forMany()) {
             (new FilterProvider($resource))->apply($query = $resource->indexQuery());

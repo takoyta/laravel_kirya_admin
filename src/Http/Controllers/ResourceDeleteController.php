@@ -7,12 +7,22 @@ use KiryaDev\Admin\Http\Requests\DeleteResourceRequest;
 
 class ResourceDeleteController
 {
+    use HasConfirmation;
+
+
     public function handle(DeleteResourceRequest $request)
     {
         $object = $request->object();
 
-        if ($request->isMethod('GET')) {
-            return $this->render($request, $object);
+        $listUrl = $request->resource()->makeUrl('list');
+
+        if (! $this->isConfirmed($request)) {
+            return $this->renderConfirm(
+                $request->resource()->actionLabel('Delete')
+                . ' '
+                . $request->resource()->title($object),
+                $listUrl
+            );
         }
 
         try {
@@ -25,22 +35,6 @@ class ResourceDeleteController
             return redirect()->back()->with('error', $e->getMessage());
         }
 
-        $listUrl = $request->resource()->makeUrl('list');
-
         return redirect($listUrl)->with('success', __('Resource deleted!'));
-    }
-
-    /**
-     * @param  \KiryaDev\Admin\Http\Requests\DeleteResourceRequest  $request
-     * @param  \Illuminate\Database\Eloquent\Model                  $object
-     * @return mixed
-     */
-    protected function render($request, $object)
-    {
-        return view('admin::resource.delete', [
-            'resource'  => $request->resource(),
-            'object'    => $object,
-            'altAction' => $request->resource()->makeActionLink('detail', 'view', 'No'),
-        ]);
     }
 }
