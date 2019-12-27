@@ -28,6 +28,11 @@ class FilterProvider
     public $fields = [];
 
     /**
+     * @var \KiryaDev\Admin\Filters\Filterable[]
+     */
+    private $filters = [];
+
+    /**
      * @var string
      */
     private $prefix;
@@ -48,18 +53,27 @@ class FilterProvider
 
      * @param  Resource          $resource
      * @param  string            $prefix
-     * @param  string[]          $values
      */
-    public function __construct(Resource $resource, string $prefix = null, array $values = [])
+    public function __construct(Resource $resource, string $prefix)
     {
         $this->resource = $resource;
         $this->prefix = $prefix;
 
-        if (! empty($resource->search)) {
+        if (!empty($resource->search)) {
             $this->searchField = Fields\Text::make('Search', $this->prefixed('search'));
         }
 
-        $this->values = $values;
+        foreach ($resource->filters() as $filter) {
+            $field = $filter->field();
+            $name = $field->name = $this->prefixed($field->name);
+
+            $this->filters[$name] = $filter;
+            $this->fields[$name] = $field;
+
+            if ($field instanceof Fields\Select) {
+                $field->addNullOption();
+            }
+        }
     }
 
     /**
@@ -101,7 +115,7 @@ class FilterProvider
 
     /**
      * @param  Builder|Relation  $builder
-     * @return mixed
+     * @return static
      */
     public function apply($builder)
     {
@@ -116,17 +130,9 @@ class FilterProvider
         }
 
         // Retrive filters values
-        foreach ($this->resource->filters() as $filter) {
-            $this->fields[] = $field = $filter->field();
-
-            if ($field instanceof Fields\Select) {
-                $field->addNullOption();
-            }
-
-            $name = $field->name = $this->prefixed($field->name);
-
+        foreach ($this->filters as $name => $filter) {
             if ($value = $this->query($name)) {
-                if ($fn = $field->fillCallback) {
+                if ($fn = $this->fields[$name]->fillCallback) {
                     $fn($object = new \stdClass, $value); // fixme
 
                     $value = $object->{$name};

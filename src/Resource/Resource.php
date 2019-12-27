@@ -14,6 +14,7 @@ use KiryaDev\Admin\Fields\BelongsTo;
 use KiryaDev\Admin\Fields\FieldElement;
 
 use KiryaDev\Admin\Traits;
+use KiryaDev\Admin\Filters\FilterProvider;
 
 abstract class Resource
 {
@@ -261,5 +262,16 @@ abstract class Resource
         $params['resource'] = $params['resource'] ?? static::uriKey();
 
         return route('admin.' . $route, $params, true);
+    }
+
+    /**
+     * Make new filter provider
+     *
+     * @param  string  $prefix
+     * @return FilterProvider
+     */
+    public function newFilterProvider($prefix = '')
+    {
+        return new FilterProvider($this, $prefix);
     }
 }

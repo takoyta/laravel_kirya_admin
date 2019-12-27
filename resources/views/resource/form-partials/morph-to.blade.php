@@ -62,13 +62,13 @@
                     width: null,
                     allowClear: false,
                     ajax: {
-                        url: params.ajax_search_url,
+                        url: params.ajaxSearchUrl,
                         delay: 250,
                         minimumInputLength: 2,
                         dataType: 'json',
                         data: function (params) {
                             /** query url data */
-                            return {term: params.term, page: params.page};
+                            return { search: params.term, page: params.page };
                         },
                     },
                     placeholder: params.placeholder,

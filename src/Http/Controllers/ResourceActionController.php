@@ -4,7 +4,6 @@ namespace KiryaDev\Admin\Http\Controllers;
 
 
 use KiryaDev\Admin\Fields\HasMany;
-use KiryaDev\Admin\Filters\FilterProvider;
 use KiryaDev\Admin\Http\Requests\ActionResourceRequest;
 use KiryaDev\Admin\Http\Requests\RelatedActionResourceRequest;
 
@@ -31,7 +30,7 @@ class ResourceActionController
         }
 
         if ($request->forMany()) {
-            (new FilterProvider($resource))->apply($query = $resource->indexQuery());
+            $resource->newFilterProvider()->apply($query = $resource->indexQuery());
 
             return $action->handleMany($resource, $query, $request);
         }

@@ -5,7 +5,6 @@ namespace KiryaDev\Admin\Http\Controllers;
 
 use KiryaDev\Admin\Resource\Paginator;
 use KiryaDev\Admin\Fields\ActionsField;
-use KiryaDev\Admin\Filters\FilterProvider;
 use KiryaDev\Admin\Fields\Text as SearchField;
 use KiryaDev\Admin\Http\Requests\IndexResourceRequest;
 
@@ -24,7 +23,7 @@ class ResourceIndexController
             ->add($resource->getIndexActionsField());
 
         // Search & Filter
-        $filterProvider = (new FilterProvider($resource))->apply(
+        $filterProvider = $resource->newFilterProvider()->apply(
             $query = $resource->indexQuery()
         );
 

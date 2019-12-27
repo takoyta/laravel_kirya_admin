@@ -64,7 +64,7 @@ class MorphTo extends FieldElement
             $options[$resource::uriKey()] = [
                 'label' => __($resource::label()),
                 'placeholder' => $resource::actionLabel('Select'),
-                'ajax_search_url' => $resource->makeUrl('api.getObjects'),
+                'ajaxSearchUrl' => $resource->makeUrl('api.getObjects'),
             ];
         }
 

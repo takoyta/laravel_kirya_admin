@@ -70,7 +70,7 @@ class HasMany extends Panel
 
     private function getFilterProvider()
     {
-        return new FilterProvider($this->relatedResource, $this->name.'_');
+        return $this->relatedResource->newFilterProvider($this->name.'_');
     }
 
     /**

@@ -44,7 +44,10 @@ class BelongsTo extends FieldElement
 
     public function formInputView($object)
     {
-        return parent::formInputView($object)->with('ajax_search_url', $this->relatedResource->makeUrl('api.getObjects'));
+        return parent::formInputView($object)
+            ->with('ajaxSearchUrl', $this->relatedResource->makeUrl('api.getObjects'))
+            ->with('filterProviderFields', $this->relatedResource->newFilterProvider()->fields)
+            ;
     }
 
     public function resolve($object)

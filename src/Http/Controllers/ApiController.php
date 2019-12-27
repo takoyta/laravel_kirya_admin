@@ -3,8 +3,6 @@
 namespace KiryaDev\Admin\Http\Controllers;
 
 
-use KiryaDev\Admin\Core;
-use KiryaDev\Admin\Resource\Search;
 use KiryaDev\Admin\Http\Requests\IndexResourceRequest;
 
 class ApiController
@@ -19,11 +17,9 @@ class ApiController
     {
         $resource = $request->resource();
 
-        $query = $resource->searchQuery();
-
-        if (($term = $request->query('term')) && $resource->search) {
-            Search::deepSearch($query, $resource->search, $term);
-        }
+        $resource->newFilterProvider()->apply(
+            $query = $resource->searchQuery()
+        );
 
         $paginator = $query->paginate(15);
 

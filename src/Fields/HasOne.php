@@ -15,7 +15,7 @@ class HasOne extends BelongsTo
             /** @var \Illuminate\Database\Eloquent\Relations\HasOne $relation */
             $relation = $object->{$this->name}();
 
-            $relation->save($value);
+            $relation->associate($value);
         });
     }
 }
