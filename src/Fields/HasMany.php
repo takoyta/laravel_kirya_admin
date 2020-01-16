@@ -84,7 +84,7 @@ class HasMany extends Panel
         $addTitle = $this->relatedResource->actionLabel('Add');
 
         $actions = $this->relatedResource
-            ->getActionLinksForHandleMany('relatedAction', ['field_type' => 'many', 'field_name' => $this->name, 'resource' => $resource->uriKey()])
+            ->getActionLinksForHandleMany('action', ['resource' => $this->relatedResource->uriKey(), 'from' => $resource->uriKey(), 'relation' => $this->name])
             ->add(
                 $resource
                     ->makeActionLink('addRelated', $addAbility, $addTitle)

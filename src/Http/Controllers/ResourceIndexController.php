@@ -15,7 +15,7 @@ class ResourceIndexController
         $resource = $request->resource();
 
         $actions = $resource
-            ->getActionLinksForHandleMany('action', ['id' => 'all'])
+            ->getActionLinksForHandleMany('action')
             ->add($resource->makeActionLink('create'));
 
         $fields = $resource

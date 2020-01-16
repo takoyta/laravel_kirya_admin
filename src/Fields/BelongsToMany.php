@@ -16,7 +16,7 @@ class BelongsToMany extends HasMany
         $attachTitle = $this->relatedResource->actionLabel('Attach');
 
         $actions = $this->relatedResource
-            ->getActionLinksForHandleMany('relatedAction', ['field_type' => 'many-many', 'field_name' => $this->name])
+            ->getActionLinksForHandleMany('action', ['resource' => $this->relatedResource->uriKey(), 'from' => $resource->uriKey(), 'relation' => $this->name])
             ->add(
                 $resource
                     ->makeActionLink('attachRelated', $attachAbility, $attachTitle)

@@ -21,8 +21,7 @@ Route::match(['get', 'post'], 'resource/{resource}/{id}/edit', 'ResourceUpdateCo
 Route::match(['get', 'post'], 'resource/{resource}/{id}/delete', 'ResourceDeleteController@handle')->name('delete');
 
 
-Route::match(['get', 'post'], 'resource/{resource}/{id}/action/{action}', 'ResourceActionController@handle')->name('action');
-Route::match(['get', 'post'], 'resource/{resource}/{id}/action/{action}/with-{field_type}/{field_name}', 'ResourceActionController@handleRelated')->name('relatedAction');
+Route::match(['get', 'post'], 'resource/{resource}/action/{action}', 'ResourceActionController@handle')->name('action');
 
 
 // Relations

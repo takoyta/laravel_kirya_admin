@@ -9,8 +9,9 @@ use KiryaDev\Admin\Fields\HasMany;
 
 /**
  * @property-read  string  $action
- * @property-read  string  $field_type
- * @property-read  string  $field_name
+ * @property-read  string  $ids
+ * @property-read  string  $from
+ * @property-read  string  $relation
  */
 class ActionResourceRequest extends DetailResourceRequest
 {
@@ -20,12 +21,12 @@ class ActionResourceRequest extends DetailResourceRequest
 
         return $this
             ->resource()
-            ->authorizedTo($ability, $this->forMany() ? null : $this->object());
+            ->authorizedTo($ability, $this->forOne() ? $this->object() : null);
     }
 
-    public function forMany()
+    public function forOne()
     {
-        return 'all' === $this->id;
+        return null !== $this->id && null === $this->from;
     }
 
     /**
@@ -36,5 +37,13 @@ class ActionResourceRequest extends DetailResourceRequest
         $class = Core::resolveActionClassName($this->action);
 
         return new $class;
+    }
+
+    public function resource()
+    {
+        if ($this->from)
+            return Core::resourceByKey($this->from);
+
+        return parent::resource();
     }
 }

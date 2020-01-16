@@ -3,9 +3,9 @@
 namespace KiryaDev\Admin\Http\Controllers;
 
 
+use KiryaDev\Admin\Core;
 use KiryaDev\Admin\Fields\HasMany;
 use KiryaDev\Admin\Http\Requests\ActionResourceRequest;
-use KiryaDev\Admin\Http\Requests\RelatedActionResourceRequest;
 
 class ResourceActionController
 {
@@ -22,39 +22,36 @@ class ResourceActionController
         $action = $request->resolveAction();
 
         if ($action->requireConfirmation && ! $this->isConfirmed($request)) {
-            $backUrl = $request->forMany()
-                ? $resource->makeUrl('list')
-                : $resource->makeUrl('detail', ['id' => $request->id]);
+            $backUrl = $request->forOne()
+                ? $resource->makeUrl('detail', ['id' => $request->id])
+                : $resource->makeUrl('list');
 
             return $this->renderConfirm($action->label(), $backUrl);
         }
 
-        if ($request->forMany()) {
+        if ($request->forOne()) {
+            $object = $request->object();
+
+            if (method_exists($action, 'handleOneFromIndex')) {
+                return $action->handleOneFromIndex($resource, $object, $request);
+            }
+
+            return $action->handleOneFromDetail($resource, $object, $request);
+        }
+
+        if ($request->from) {
+            $query = $resource->findModel($request->id)->{$request->relation}();
+            $resource = Core::resourceByKey($request->resource);
+
+            $resource->newFilterProvider($request->relation.'_')->apply($query);
+        } else {
             $resource->newFilterProvider()->apply($query = $resource->indexQuery());
-
-            return $action->handleMany($resource, $query, $request);
         }
 
-        $object = $request->object();
-
-        if (method_exists($action, 'handleOneFromIndex')) {
-            return $action->handleOneFromIndex($resource, $object, $request);
+        if ($request->ids) {
+            $query->whereKey(explode(',', $request->ids));
         }
 
-        return $action->handleOneFromDetail($resource, $object, $request);
-    }
-
-    /**
-     * @param  RelatedActionResourceRequest  $request
-     * @return mixed
-     */
-    public function handleRelated(RelatedActionResourceRequest $request)
-    {
-        $action = $request->resolveAction();
-
-        $field = $request->resolveHasManyField();
-        $object = $request->object();
-
-        return $action->handleMany($field->relatedResource, $field->getRelation($object), $request);
+        return $action->handleMany($resource, $query, $request);
     }
 }

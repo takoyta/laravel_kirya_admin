@@ -104,6 +104,9 @@ textarea.panel-control {
     text-decoration: none !important;
     cursor: pointer;
 }
+.panel-button[data-counter]::after {
+    content: ' (' attr(data-counter) ')';
+}
 a.panel-button:hover {
     color: white;
 }
