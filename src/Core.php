@@ -72,7 +72,7 @@ final class Core
             ->map(function ($resource, $uriKey) {
                 /** @var \KiryaDev\Admin\Resource\Resource $resource */
                 return [
-                    'label'  => $resource::label(),
+                    'label'  => $resource::pluralLabel(),
                     'uriKey' => $uriKey,
                     'group'  => $resource->group,
                     'order'  => $resource->orderInSidebar,

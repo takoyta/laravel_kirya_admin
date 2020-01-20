@@ -15,4 +15,14 @@ trait HasLabel
     {
         return Str::title(Str::snake(class_basename(static::class), ' '));
     }
+
+    /**
+     * Makes plural label.
+     *
+     * @return string
+     */
+    public static function pluralLabel()
+    {
+        return Str::plural(static::label());
+    }
 }

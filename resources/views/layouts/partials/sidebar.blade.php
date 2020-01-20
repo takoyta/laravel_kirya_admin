@@ -11,7 +11,8 @@
             <div class="sidebar-group mb-1 px-4">{!! __($group) !!}</div>
 
             @foreach($resources as $item)
-                <div class="sidebar-resource mb-1 px-4" data-order="{!! $item['order'] !!}">
+                <!-- order {!! $item['order'] !!} -->
+                <div class="sidebar-resource mb-1 px-4">
                     <a
                         href="{{ route('admin.list', $item['uriKey']) }}"
                         class="a @if($currentResourceUriKey === $item['uriKey']) text-success font-weight-bold @endif"

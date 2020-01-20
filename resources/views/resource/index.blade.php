@@ -1,6 +1,6 @@
 @extends('admin::layouts.app')
 
-@section('title', __($resource->label() . ' List'))
+@section('title', __($resource->pluralLabel()))
 
 
 @section('content')
