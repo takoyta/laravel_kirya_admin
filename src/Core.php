@@ -94,4 +94,16 @@ final class Core
 
         return $namespace.'Admin\\Actions\\'.Str::studly($action);
     }
+
+    public static function setPreviousUrl()
+    {
+        session()->put('admin.previous_url', url()->previous());
+    }
+
+    public static function redirectToPrevious()
+    {
+        $url = session()->pull('admin.previous_url') ?? url()->previous();
+
+        return redirect($url);
+    }
 }

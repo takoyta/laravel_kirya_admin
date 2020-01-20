@@ -2,6 +2,7 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
+use KiryaDev\Admin\Core;
 use Illuminate\Support\Facades\DB;
 use KiryaDev\Admin\Http\Requests\DeleteResourceRequest;
 
@@ -13,16 +14,13 @@ class ResourceDeleteController
     public function handle(DeleteResourceRequest $request)
     {
         $object = $request->object();
-
-        $listUrl = $request->resource()->makeUrl('list');
+        $resource = $request->resource();
+        $objectTitle = $resource->title($object);
 
         if (! $this->isConfirmed($request)) {
-            return $this->renderConfirm(
-                $request->resource()->actionLabel('Delete')
-                . ' '
-                . $request->resource()->title($object),
-                $listUrl
-            );
+            Core::setPreviousUrl();
+
+            return $this->renderConfirm($resource->actionLabel('Delete') . ' ' . $objectTitle);
         }
 
         try {
@@ -32,9 +30,12 @@ class ResourceDeleteController
                 $object->delete();
             });
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            if (app()->isLocal()) throw $e;
+
+            return Core::redirectToPrevious()->with('error', $e->getMessage());
         }
 
-        return redirect($listUrl)->with('success', __('Resource deleted!'));
+        return redirect($resource->makeUrl('list'))
+            ->with('success', __('Resource :title deleted!', ['title' => $objectTitle]));
     }
 }

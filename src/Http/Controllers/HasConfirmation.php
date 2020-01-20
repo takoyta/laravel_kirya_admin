@@ -10,9 +10,9 @@ trait HasConfirmation
         return $request->isMethod('POST');
     }
 
-    protected function renderConfirm($title, $backUrl = null)
+    protected function renderConfirm($title)
     {
-        $backUrl = $backUrl ?? url()->previous();
+        $backUrl = url()->previous();
 
         return view('admin::resource.confirm-action', compact('title', 'backUrl'));
     }

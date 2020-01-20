@@ -22,11 +22,9 @@ class ResourceActionController
         $action = $request->resolveAction();
 
         if ($action->requireConfirmation && ! $this->isConfirmed($request)) {
-            $backUrl = $request->forOne()
-                ? $resource->makeUrl('detail', ['id' => $request->id])
-                : $resource->makeUrl('list');
+            Core::setPreviousUrl();
 
-            return $this->renderConfirm($action->label(), $backUrl);
+            return $this->renderConfirm($action->label());
         }
 
         if ($request->forOne()) {

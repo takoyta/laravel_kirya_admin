@@ -55,6 +55,8 @@ trait HandlesForm
                 $object->forceFill($data)->save();
             });
         } catch (\Exception $e) {
+            if (app()->isLocal()) throw $e;
+
             return redirect()->refresh()->withInput()->with('error', $e->getMessage());
         }
 
@@ -115,17 +117,15 @@ trait HandlesForm
     }
 
     /**
-     * @param  \KiryaDev\Admin\Resource\Resource    $request
+     * @param  \KiryaDev\Admin\Resource\Resource    $resource
      * @param  \Illuminate\Database\Eloquent\Model  $object
      * @return mixed
      */
     protected function successSaving($resource, $object)
     {
-        $backUrl = $resource->makeUrl('detail', [
-            'id' => $object->getKey(),
-        ]);
-
-        return redirect($backUrl)->with('success', __($object->wasRecentlyCreated ? 'Resource created!' : 'Resource updated!'));
+        return redirect($resource
+            ->makeUrl('detail', ['id' => $object->getKey()]))
+            ->with('success', __($object->wasRecentlyCreated ? 'Resource :title created!' : 'Resource :title updated!', ['title' => $resource->title($object)]));
     }
 
     /**
