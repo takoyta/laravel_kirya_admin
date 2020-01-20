@@ -3,13 +3,16 @@
 namespace KiryaDev\Admin\Traits;
 
 
+use Illuminate\Support\Str;
+
+use KiryaDev\Admin\Actions\Actionable;
 use KiryaDev\Admin\Fields\ActionsField;
 use KiryaDev\Admin\Resource\ActionLink;
 
 trait ResourceActions
 {
     /**
-     * @return \KiryaDev\Admin\Actions\Actionable[]
+     * @return Actionable[]
      */
     public function actions()
     {
@@ -58,8 +61,16 @@ trait ResourceActions
             ->filter(function ($action) use ($method) {
                 return method_exists($action, $method);
             })
-            ->map(function ($action) use ($route, $params) {
-                return $action->link($this, $route)->param('action', $action->uriKey())->param($params);
+            ->map(function (Actionable $action) use ($route, $params) {
+                $link = $this
+                    ->makeActionLink($route,
+                        Str::camel(class_basename($action)),
+                        __($action->label())
+                    )
+                    ->param('action', $action->uriKey())
+                    ->param($params);
+
+                return $action->configureLink($link);
             });
     }
 

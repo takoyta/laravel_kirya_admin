@@ -4,7 +4,7 @@ namespace KiryaDev\Admin\Actions;
 
 
 use KiryaDev\Admin\Traits;
-use Illuminate\Support\Str;
+use KiryaDev\Admin\Resource\ActionLink;
 
 abstract class Actionable
 {
@@ -14,14 +14,13 @@ abstract class Actionable
 
 
     /**
-     * @param  $resource  \KiryaDev\Admin\Resource\Resource
-     * @param  $route  string
-     * @return \KiryaDev\Admin\Resource\ActionLink
+     * @param  $link  ActionLink
+     * @return ActionLink
      */
-    public function link($resource, $route)
+    public function configureLink($link)
     {
-        $basename = class_basename(static::class);
+        return $link;
+    }
 
-        return $resource->makeActionLink($route, Str::camel($basename), __(static::label()));
     }
 }
