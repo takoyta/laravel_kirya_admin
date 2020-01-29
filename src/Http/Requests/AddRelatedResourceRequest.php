@@ -21,7 +21,7 @@ class AddRelatedResourceRequest extends CreateResourceRequest
         return $this
             ->resource()
             ->authorizedTo(
-                'add' . class_basename($this->relatedResource()->model),
+                'add' . $this->relatedResource()->modelName(),
                 $this->resource()->findModel($this->id)
             );
     }

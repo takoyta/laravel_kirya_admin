@@ -13,10 +13,14 @@ trait Authorizable
 
     public function authorizedTo($ability, $object = null)
     {
-        $policy = Gate::getPolicyFor($this->model);
+        // Object can be null or instance of another resource
 
-        return ($policy && method_exists($policy, $ability))
-            ? Gate::check($ability, $object ?? $this->model)
-            : true;
+        // Get the raw result from the authorization callback.
+        // true - allow
+        // false - deny
+        // null - no exits method or polciy
+        $result = Gate::raw($ability, [$object ?? $this->model]);
+
+        return is_bool($result) ? $result : true;
     }
 }

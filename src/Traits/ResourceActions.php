@@ -3,8 +3,6 @@
 namespace KiryaDev\Admin\Traits;
 
 
-use Illuminate\Support\Str;
-
 use KiryaDev\Admin\Actions\Actionable;
 use KiryaDev\Admin\Fields\ActionsField;
 use KiryaDev\Admin\Resource\ActionLink;
@@ -20,13 +18,13 @@ trait ResourceActions
     }
 
     /**
-     * @param string $route
+     * @param string $abilitySuffix
      * @param array $params
      * @return \Illuminate\Support\Collection
      */
-    public function getActionLinksForHandleMany($route, $params = [])
+    public function getActionLinksForHandleMany($abilitySuffix = '', $params = [])
     {
-        return $this->getActionLinks('handleMany', $route, $params);
+        return $this->getActionLinks('handleMany', $abilitySuffix, $params);
     }
 
     /**
@@ -34,7 +32,7 @@ trait ResourceActions
      */
     public function getActionLinksForHandleOneFromDetail()
     {
-        return $this->getActionLinks('handleOneFromDetail', 'action');
+        return $this->getActionLinks('handleOneFromDetail');
     }
 
     /**
@@ -44,7 +42,7 @@ trait ResourceActions
     {
         return ActionsField::with(
             $this
-                ->getActionLinks('handleOneFromIndex', 'action')
+                ->getActionLinks('handleOneFromIndex')
                 ->add($this->makeActionLink('detail', 'view')->icon('eye')->displayAsLink())
             );
     }
@@ -55,18 +53,15 @@ trait ResourceActions
      * @param  $params  array
      * @return \Illuminate\Support\Collection
      */
-    private function getActionLinks($method, $route, $params = [])
+    private function getActionLinks($method, $abilitySuffix = '', $params = [])
     {
         return collect($this->actions())
             ->filter(function ($action) use ($method) {
                 return method_exists($action, $method);
             })
-            ->map(function (Actionable $action) use ($route, $params) {
+            ->map(function (Actionable $action) use ($abilitySuffix, $params) {
                 $link = $this
-                    ->makeActionLink($route,
-                        Str::camel(class_basename($action)),
-                        __($action->label())
-                    )
+                    ->makeActionLink('action', $action->ability($abilitySuffix), __($action->label()))
                     ->param('action', $action->uriKey())
                     ->param($params);
 

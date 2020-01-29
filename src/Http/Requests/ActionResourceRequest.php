@@ -4,8 +4,6 @@ namespace KiryaDev\Admin\Http\Requests;
 
 
 use KiryaDev\Admin\Core;
-use Illuminate\Support\Str;
-use KiryaDev\Admin\Fields\HasMany;
 
 /**
  * @property-read  string  $action
@@ -17,7 +15,7 @@ class ActionResourceRequest extends DetailResourceRequest
 {
     public function authorize()
     {
-        $ability = Str::camel($this->action).'Action';
+        $ability = $this->resolveAction()->ability($this->from ? $this->resource()->modelName() : '');
 
         return $this
             ->resource()

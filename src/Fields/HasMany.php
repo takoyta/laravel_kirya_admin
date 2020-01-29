@@ -80,14 +80,14 @@ class HasMany extends Panel
      */
     protected function actions($resource, $object)
     {
-        $addAbility = 'add'.class_basename($this->relatedResource->model);
+        $abilitySuffix = $this->relatedResource->modelName();
         $addTitle = $this->relatedResource->actionLabel('Add');
 
         $actions = $this->relatedResource
-            ->getActionLinksForHandleMany('action', ['resource' => $this->relatedResource->uriKey(), 'from' => $resource->uriKey(), 'relation' => $this->name])
+            ->getActionLinksForHandleMany($abilitySuffix, ['resource' => $this->relatedResource->uriKey(), 'from' => $resource->uriKey(), 'relation' => $this->name])
             ->add(
                 $resource
-                    ->makeActionLink('addRelated', $addAbility, $addTitle)
+                    ->makeActionLink('addRelated', 'add' . $abilitySuffix, $addTitle)
                     ->param('related_resource', $this->relatedResource->uriKey())
             );
 

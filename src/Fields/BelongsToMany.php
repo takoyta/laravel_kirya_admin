@@ -12,14 +12,14 @@ class BelongsToMany extends HasMany
      */
     protected function actions($resource, $object)
     {
-        $attachAbility = 'attach'.class_basename($this->relatedResource->model);
+        $abilitySuffix = $this->relatedResource->modelName();
         $attachTitle = $this->relatedResource->actionLabel('Attach');
 
         $actions = $this->relatedResource
-            ->getActionLinksForHandleMany('action', ['resource' => $this->relatedResource->uriKey(), 'from' => $resource->uriKey(), 'relation' => $this->name])
+            ->getActionLinksForHandleMany($abilitySuffix, ['resource' => $this->relatedResource->uriKey(), 'from' => $resource->uriKey(), 'relation' => $this->name])
             ->add(
                 $resource
-                    ->makeActionLink('attachRelated', $attachAbility, $attachTitle)
+                    ->makeActionLink('attachRelated', 'attach' . $abilitySuffix, $attachTitle)
                     ->param('related_resource', $this->relatedResource->uriKey())
                     ->addClass('js-attach-related')
             );
@@ -36,7 +36,7 @@ class BelongsToMany extends HasMany
     {
         $detachTitle = $this->relatedResource->actionLabel('Detach');
 
-        $ability = 'detach'.class_basename($this->relatedResource->model);
+        $ability = 'detach'.$this->relatedResource->modelName();
 
         return $this
             ->relatedResource

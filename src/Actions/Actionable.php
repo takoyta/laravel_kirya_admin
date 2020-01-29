@@ -5,6 +5,7 @@ namespace KiryaDev\Admin\Actions;
 
 use KiryaDev\Admin\Core;
 use KiryaDev\Admin\Traits;
+use Illuminate\Support\Str;
 use KiryaDev\Admin\Resource\ActionLink;
 
 abstract class Actionable
@@ -21,6 +22,11 @@ abstract class Actionable
     public function configureLink($link)
     {
         return $link;
+    }
+
+    public function ability($suffix = '')
+    {
+        return Str::camel(class_basename(static::class)) . $suffix . 'Action';
     }
 
     public function successResponse($message)

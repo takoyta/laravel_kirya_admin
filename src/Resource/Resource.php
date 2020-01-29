@@ -241,6 +241,15 @@ abstract class Resource
         return __(':action ' . static::label(), ['action' => __($action)]);
     }
 
+    /**
+     * Return class base name of model.
+     *
+     * @return string
+     */
+    public function modelName()
+    {
+        return class_basename($this->model);
+    }
 
     /**
      * Retrive instance of current resource.
