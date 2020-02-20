@@ -10,10 +10,17 @@ use KiryaDev\Admin\Resource\ActionLink;
 
 abstract class Actionable
 {
-    use Traits\HasLabel, Traits\HasUriKey;
+    use Traits\HasLabel,
+        Traits\HasFields,
+        Traits\HasUriKey;
 
     public $requireConfirmation = false;
 
+
+    public function __construct()
+    {
+        $this->requireConfirmation |= ! empty($this->getFieldsOnce());
+    }
 
     /**
      * @param  $link  ActionLink

@@ -95,15 +95,15 @@ final class Core
         return $namespace.'Admin\\Actions\\'.Str::studly($action);
     }
 
-    public static function setPreviousUrl()
+    public static function getPreviousUrl()
     {
-        session()->put('admin.previous_url', url()->previous());
+        return request()->post('_previous_url') // Get url from form
+            ?? request()->old('_previous_url')  // Get old value url after fail validation
+            ?? url()->previous();
     }
 
     public static function redirectToPrevious()
     {
-        $url = session()->pull('admin.previous_url') ?? url()->previous();
-
-        return redirect($url);
+        return redirect(Core::getPreviousUrl());
     }
 }

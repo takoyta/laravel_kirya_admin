@@ -9,13 +9,6 @@ class HasOne extends BelongsTo
     {
         parent::boot();
 
-        $this->fillUsing(function ($object, $value) {
-            // fixme: check value is available id
-
-            /** @var \Illuminate\Database\Eloquent\Relations\HasOne $relation */
-            $relation = $object->{$this->name}();
-
-            $relation->associate($value);
-        });
+        $this->exceptOnForms(); // Has not editable field as HasMany
     }
 }

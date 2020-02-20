@@ -9,9 +9,6 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 
 trait HandlesForm
 {
-    use ValidatesRequests;
-
-
     /**
      * @param  \Illuminate\Http\Request             $request
      * @param  \KiryaDev\Admin\Resource\Resource    $resource
@@ -20,39 +17,29 @@ trait HandlesForm
      */
     protected function doHandle($request, $resource, $object)
     {
-        // Resolve panels
-        $panels = $resource->getFormPanels($object);
-
         // Handle GET
         if ($request->isMethod('GET')) {
-            return $this->render($resource, $object, $panels);
+            return $this->render($resource, $object);
         }
 
-        // Handle POST
-        $fields = $this->handlesFields($panels);
-
         // Validate data
-        $data = $this->validate(
-            $request,
-            $this->validationRules($fields, $object),
-            [],
-            $this->validationAttributes($fields)
-        );
+        $data = $resource->validateOnFields($request, $object);
 
         try {
             $this->ensureRetrievedAfterLastModified($request, $object);
 
-            DB::transaction(function () use ($fields, $object, &$data) {
-                // Run fill callbacks
-                foreach ($fields as $field) {
-                    /** @var \KiryaDev\Admin\Fields\FieldElement $field */
-                    if ($fn = $field->fillCallback) {
-                        $fn($object, Arr::pull($data, $field->name));
-                    }
+            // Run fill callbacks
+            foreach ($resource->collapseFieldsFromPanels($object) as $field) {
+                /** @var \KiryaDev\Admin\Fields\FieldElement $field */
+                if ($fn = $field->fillCallback) {
+                    $fn($object, Arr::pull($data, $field->name));
                 }
+            }
 
-                // Fill & Save
-                $object->forceFill($data)->save();
+            $object->forceFill($data);
+
+            DB::transaction(function () use ($object) {
+                $object->save();
             });
         } catch (\Exception $e) {
             if (app()->isLocal()) throw $e;
@@ -61,45 +48,6 @@ trait HandlesForm
         }
 
         return $this->successSaving($resource, $object);
-    }
-
-    /**
-     * @param  \KiryaDev\Admin\Fields\Panel[]  $panels
-     * @return \Illuminate\Support\Collection
-     */
-    protected function handlesFields($panels)
-    {
-        return collect($panels)
-            ->pluck('fields')
-            ->collapse()
-            ->whereStrict('disabled', false);
-    }
-
-    /**
-     * @param  \Illuminate\Support\Collection       $fields
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return array
-     */
-    protected function validationRules($fields, $object)
-    {
-        if ($object->exists && ($id = $object->getKey())) {
-            return $fields
-                ->pluck('updateRules', 'name')->map(function ($rule) use ($id) {
-                    return str_replace('{id}', $id, $rule);
-                })
-                ->all();
-        }
-
-        return $fields->pluck('creationRules', 'name')->all();
-    }
-
-    /**
-     * @param  \Illuminate\Support\Collection       $fields
-     * @return array
-     */
-    protected function validationAttributes($fields)
-    {
-        return $fields->pluck('title', 'name')->all();
     }
 
     /**
@@ -131,11 +79,12 @@ trait HandlesForm
     /**
      * @param  \KiryaDev\Admin\Resource\Resource    $resource
      * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @param  \KiryaDev\Admin\Fields\Panel[]       $panels
      * @return mixed
      */
-    protected function render($resource, $object, $panels)
+    protected function render($resource, $object)
     {
+        $panels = $resource->getFormPanels($object);
+
         $retrivedAt = ['_retrived_at', old('_retrived_at', now())];
 
         return view('admin::resource.form', compact('resource', 'panels', 'object', 'retrivedAt'));

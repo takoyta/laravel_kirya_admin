@@ -138,7 +138,7 @@ class HasMany extends Panel
             ->add($this->relatedResource->getIndexActionsField());
     }
 
-    public function displayForm($object, $resource)
+    public function displayForm($object)
     {
         // fixme : no need display this of forms
         return null;

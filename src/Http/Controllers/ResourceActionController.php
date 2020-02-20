@@ -4,6 +4,8 @@ namespace KiryaDev\Admin\Http\Controllers;
 
 
 use KiryaDev\Admin\Core;
+use KiryaDev\Admin\Traits;
+use KiryaDev\Admin\Fields\Panel;
 use KiryaDev\Admin\Fields\HasMany;
 use KiryaDev\Admin\Http\Requests\ActionResourceRequest;
 
@@ -13,7 +15,7 @@ class ResourceActionController
 
 
     /**
-     * @param  ActionResourceRequest  $request
+     * @param ActionResourceRequest $request
      * @return mixed
      */
     public function handle(ActionResourceRequest $request)
@@ -21,10 +23,16 @@ class ResourceActionController
         $resource = $request->resource();
         $action = $request->resolveAction();
 
-        if ($action->requireConfirmation && ! $this->isConfirmed($request)) {
-            Core::setPreviousUrl();
+        if ($action->requireConfirmation) {
 
-            return $this->renderConfirm($action->label());
+            if (! $this->isConfirmed($request)) {
+                return $this->renderConfirm($action->label(), $resource, $action->getFormPanels(optional()));
+            }
+
+            // Just validate, but for get values use request in your needs
+            $action->validateOnFields($request, optional());
+            // fixme - run fillCallback on each field
+            // pass value to handle
         }
 
         if ($request->forOne()) {
@@ -41,7 +49,7 @@ class ResourceActionController
             $query = $resource->findModel($request->id)->{$request->relation}();
             $resource = Core::resourceByKey($request->resource);
 
-            $resource->newFilterProvider($request->relation.'_')->apply($query);
+            $resource->newFilterProvider($request->relation . '_')->apply($query);
         } else {
             $resource->newFilterProvider()->apply($query = $resource->indexQuery());
         }

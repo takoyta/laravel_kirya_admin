@@ -18,9 +18,7 @@ class ResourceDeleteController
         $objectTitle = $resource->title($object);
 
         if (! $this->isConfirmed($request)) {
-            Core::setPreviousUrl();
-
-            return $this->renderConfirm($resource->actionLabel('Delete') . ' ' . $objectTitle);
+            return $this->renderConfirm($resource->actionLabel('Delete') . ' ' . $objectTitle, $resource);
         }
 
         try {

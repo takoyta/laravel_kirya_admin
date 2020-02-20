@@ -15,7 +15,7 @@
         @php([$key, $value] = $retrivedAt)
         <input type="hidden" name="{!! $key !!}" value="{!! $value !!}">
 
-        @foreach($panels as $panel) {!! $panel->displayForm($resource, $object) !!} @endforeach
+        @foreach($panels as $panel) {!! $panel->displayForm($object) !!} @endforeach
 
         <div class="panel">
             <div class="panel-item">

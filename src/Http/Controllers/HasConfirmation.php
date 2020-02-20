@@ -3,6 +3,8 @@
 namespace KiryaDev\Admin\Http\Controllers;
 
 
+use KiryaDev\Admin\Core;
+
 trait HasConfirmation
 {
     protected function isConfirmed($request)
@@ -10,10 +12,10 @@ trait HasConfirmation
         return $request->isMethod('POST');
     }
 
-    protected function renderConfirm($title)
+    protected function renderConfirm($title, $resource, $panels = [])
     {
-        $backUrl = url()->previous();
+        $previousUrl = Core::getPreviousUrl();
 
-        return view('admin::resource.confirm-action', compact('title', 'backUrl'));
+        return view('admin::resource.confirm-action', compact('title', 'resource', 'panels', 'previousUrl'));
     }
 }
