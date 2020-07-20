@@ -22,7 +22,7 @@
 
         <button type="submit" class="mt-1 item-heading w-100 border-0 py-1">{!! __('Apply filters') !!}</button>
 
-        <button type="button" class="mt-1 item-heading w-100 border-0 py-1 js-reset-btn">{!! __('Reset filters') !!}</button>
+        <button type="button" class="my-1 item-heading w-100 border-0 py-1 js-reset-btn">{!! __('Reset filters') !!}</button>
     </div>
 
 </div>
