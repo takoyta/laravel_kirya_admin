@@ -2,17 +2,19 @@
 
 namespace KiryaDev\Admin\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
+use KiryaDev\Admin\Fields\FieldElement;
 
 interface Filterable
 {
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  string  $value
+     * @param Builder $query
+     * @param string $value
      */
-   public function apply($query, $value);
+    public function apply($query, $value);
 
     /**
-     * @return \KiryaDev\Admin\Fields\FieldElement
+     * @return FieldElement
      */
-   public function field();
+    public function field();
 }

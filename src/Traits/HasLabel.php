@@ -2,27 +2,22 @@
 
 namespace KiryaDev\Admin\Traits;
 
-
 use Illuminate\Support\Str;
 
 trait HasLabel
 {
     /**
      * Makes label.
-     *
-     * @return string
      */
-    public static function label()
+    public static function label(): string
     {
         return Str::title(Str::snake(class_basename(static::class), ' '));
     }
 
     /**
      * Makes plural label.
-     *
-     * @return string
      */
-    public static function pluralLabel()
+    public static function pluralLabel(): string
     {
         return Str::plural(static::label());
     }

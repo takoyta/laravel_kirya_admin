@@ -2,19 +2,19 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
-
-use KiryaDev\Admin\Core;
+use Illuminate\Http\Request;
+use KiryaDev\Admin\AdminCore;
 
 trait HasConfirmation
 {
-    protected function isConfirmed($request)
+    protected function isConfirmed(Request $request): bool
     {
         return $request->isMethod('POST');
     }
 
     protected function renderConfirm($title, $resource, $panels = [])
     {
-        $previousUrl = Core::getPreviousUrl();
+        $previousUrl = AdminCore::getPreviousUrl();
 
         return view('admin::resource.confirm-action', compact('title', 'resource', 'panels', 'previousUrl'));
     }

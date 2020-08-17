@@ -2,70 +2,26 @@
 
 namespace KiryaDev\Admin\Resource;
 
-
 use Illuminate\Database\Eloquent\Model;
 
 class ActionLink
 {
-    /**
-     * @var string
-     */
-    protected $route;
+    protected string $route;
+    protected string $objectKey = 'id';
+    protected string $ability;
+    protected string $altTitle;
+    protected AbstractResource $resource;
+    protected bool $asLink = false;
 
-    /**
-     * @var string
-     */
-    protected $objectKey = 'id';
+    /** FontAwesome icon  */
+    protected ?string $icon = null;
 
-    /**
-     * @var string
-     */
-    protected $ability;
+    /** CSS classes */
+    protected array $classes = [];
 
-    /**
-     * @var string
-     */
-    protected $altTitle;
+    protected array $params = [];
 
-    /**
-     * @var \KiryaDev\Admin\Resource\Resource
-     */
-    protected $resource;
-
-    /**
-     * @var bool
-     */
-    protected $asLink = false;
-
-    /**
-     * FontAwesome icon
-     *
-     * @var string|null
-     */
-    protected $icon = null;
-
-    /**
-     * CSS classes
-     *
-     * @var string|null
-     */
-    protected $classes = [];
-
-    /**
-     * @var array
-     */
-    protected $params = [];
-
-
-    /**
-     * Action constructor.
-     *
-     * @param  \KiryaDev\Admin\Resource\Resource  $resource
-     * @param  string       $route
-     * @param  string|null  $ability
-     * @param  string|null  $title
-     */
-    public function __construct($resource, $route, $ability = null, $title = null)
+    public function __construct(AbstractResource $resource, string $route, string $ability = null, string $title = null)
     {
         $this->resource = $resource;
 
@@ -75,7 +31,7 @@ class ActionLink
     }
 
     /**
-     * @param  null|mixed  $object
+     * @param null|mixed $object
      * @return null|string
      */
     public function display($object = null)
@@ -96,7 +52,7 @@ class ActionLink
                 ? sprintf(
                     '<a href="%s" class="%s" title="%s">%s</a>',
                     e($url),
-                    ($this->icon ? 'a text-muted ' : '').implode(' ', $this->classes),
+                    ($this->icon ? 'a text-muted ' : '') . implode(' ', $this->classes),
                     $this->altTitle,
                     $title
                 )

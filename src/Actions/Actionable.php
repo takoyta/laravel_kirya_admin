@@ -2,11 +2,10 @@
 
 namespace KiryaDev\Admin\Actions;
 
-
-use KiryaDev\Admin\Core;
-use KiryaDev\Admin\Traits;
 use Illuminate\Support\Str;
+use KiryaDev\Admin\AdminCore;
 use KiryaDev\Admin\Resource\ActionLink;
+use KiryaDev\Admin\Traits;
 
 abstract class Actionable
 {
@@ -14,16 +13,17 @@ abstract class Actionable
         Traits\HasFields,
         Traits\HasUriKey;
 
-    public $requireConfirmation = false;
-
+    public bool $requireConfirmation = false;
 
     public function __construct()
     {
-        $this->requireConfirmation |= ! empty($this->getFieldsOnce());
+        if (\count($this->getFieldsOnce()) > 0) {
+            $this->requireConfirmation = true;
+        }
     }
 
     /**
-     * @param  $link  ActionLink
+     * @param $link ActionLink
      * @return ActionLink
      */
     public function configureLink($link)
@@ -31,18 +31,18 @@ abstract class Actionable
         return $link;
     }
 
-    public function ability($suffix = '')
+    public function ability($suffix = ''): string
     {
         return Str::camel(class_basename(static::class)) . $suffix . 'Action';
     }
 
     public function successResponse($message)
     {
-        return Core::redirectToPrevious()->with('success', $message);
+        return AdminCore::redirectToPrevious()->with('success', $message);
     }
 
     public function errorResponse($message)
     {
-        return Core::redirectToPrevious()->with('error', $message);
+        return AdminCore::redirectToPrevious()->with('error', $message);
     }
 }

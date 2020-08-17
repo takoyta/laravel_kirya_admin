@@ -2,21 +2,21 @@
 
 namespace KiryaDev\Admin\Http\Requests;
 
-
-use KiryaDev\Admin\Core;
-use KiryaDev\Admin\Fields\MorphTo;
+use KiryaDev\Admin\AdminCore;
+use KiryaDev\Admin\Fields\BelongsTo;
 use KiryaDev\Admin\Fields\HasMany;
 use KiryaDev\Admin\Fields\MorphMany;
-use KiryaDev\Admin\Fields\BelongsTo;
+use KiryaDev\Admin\Fields\MorphTo;
+use KiryaDev\Admin\Resource\AbstractResource;
 
 /**
- * @property-read  string  $id
- * @property-read  string  $resource
- * @property-read  string  $related_resource
+ * @property-read string $id
+ * @property-read string $resource
+ * @property-read string $related_resource
  */
 class AddRelatedResourceRequest extends CreateResourceRequest
 {
-    public function authorize()
+    public function authorize(): bool
     {
         return $this
             ->resource()
@@ -26,15 +26,12 @@ class AddRelatedResourceRequest extends CreateResourceRequest
             );
     }
 
-    public function relatedResource()
+    public function relatedResource(): AbstractResource
     {
-        return Core::resourceByKey($this->related_resource);
+        return AdminCore::resourceByKey($this->related_resource);
     }
 
-    /**
-     * @return \KiryaDev\Admin\Fields\BelongsTo
-     */
-    public function resolveRelatedField()
+    public function resolveRelatedField(): BelongsTo
     {
         $parentField = $this->resource()->resolveField(HasMany::class, $this->related_resource);
 

@@ -2,19 +2,16 @@
 
 namespace KiryaDev\Admin\Traits;
 
-
 trait HasRules
 {
-    public $creationRules = [];
-
-    public $updateRules = [];
-
+    public array $creationRules = [];
+    public array $updateRules = [];
 
     /**
-     * @param  string  ...$rules
+     * @param string ...$rules
      * @return static
      */
-    public function creationRules(...$rules)
+    public function creationRules(...$rules): HasRules
     {
         $this->creationRules = array_merge($this->creationRules, $rules);
 
@@ -22,7 +19,7 @@ trait HasRules
     }
 
     /**
-     * @param  string  ...$rules
+     * @param string ...$rules
      * @return static
      */
     public function updateRules(...$rules)

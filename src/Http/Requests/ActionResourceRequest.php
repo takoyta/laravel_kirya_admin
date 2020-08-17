@@ -2,18 +2,19 @@
 
 namespace KiryaDev\Admin\Http\Requests;
 
-
-use KiryaDev\Admin\Core;
+use KiryaDev\Admin\Actions\Actionable;
+use KiryaDev\Admin\AdminCore;
+use KiryaDev\Admin\Resource\AbstractResource;
 
 /**
- * @property-read  string  $action
- * @property-read  string  $ids
- * @property-read  string  $from
- * @property-read  string  $relation
+ * @property-read string $action
+ * @property-read string $ids
+ * @property-read string $from
+ * @property-read string $relation
  */
 class ActionResourceRequest extends DetailResourceRequest
 {
-    public function authorize()
+    public function authorize(): bool
     {
         $ability = $this->resolveAction()->ability($this->from ? $this->resource()->modelName() : '');
 
@@ -22,25 +23,23 @@ class ActionResourceRequest extends DetailResourceRequest
             ->authorizedTo($ability, $this->forOne() ? $this->object() : null);
     }
 
-    public function forOne()
+    public function forOne(): bool
     {
         return null !== $this->id && null === $this->from;
     }
 
-    /**
-     * @return \KiryaDev\Admin\Actions\Actionable
-     */
-    public function resolveAction()
+    public function resolveAction(): Actionable
     {
-        $class = Core::resolveActionClassName($this->action);
+        $class = AdminCore::resolveActionClassName($this->action);
 
         return new $class;
     }
 
-    public function resource()
+    public function resource(): AbstractResource
     {
-        if ($this->from)
-            return Core::resourceByKey($this->from);
+        if ($this->from) {
+            return AdminCore::resourceByKey($this->from);
+        }
 
         return parent::resource();
     }

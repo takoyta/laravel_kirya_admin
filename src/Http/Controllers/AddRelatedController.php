@@ -2,7 +2,6 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
-
 use KiryaDev\Admin\Fields\MorphTo;
 use KiryaDev\Admin\Traits\HandlesForm;
 use KiryaDev\Admin\Http\Requests\AddRelatedResourceRequest;

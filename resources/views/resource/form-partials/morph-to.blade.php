@@ -23,7 +23,7 @@
         disabled
 >
     @if($value)
-        <option value="{!! $id = $value[$key = key($value)] !!}" selected>{!! app('admin')->resourceByKey($key)->title($id) !!}</option>
+        <option value="{!! $id = $value[$key = key($value)] !!}" selected>{!! app('admin.core')->resourceByKey($key)->title($id) !!}</option>
     @endif
 </select>
 

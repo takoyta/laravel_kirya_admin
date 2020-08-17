@@ -2,14 +2,14 @@
 
 namespace KiryaDev\Admin\Resource;
 
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-
-use KiryaDev\Admin\Core;
-use KiryaDev\Admin\Traits;
+use KiryaDev\Admin\AdminCore;
+use KiryaDev\Admin\Filters\Filterable;
 use KiryaDev\Admin\Filters\FilterProvider;
+use KiryaDev\Admin\Traits;
 
-abstract class Resource
+abstract class AbstractResource
 {
     use Traits\HasLabel,
         Traits\HasUriKey,
@@ -18,21 +18,20 @@ abstract class Resource
         Traits\ResourceActions,
         Traits\HasConfirmationMessages;
 
-    public $model;
+    public string $model;
 
-    public $group = 'Other';
+    public string $group = 'Other';
 
-    public $title = 'id';
+    public string $title = 'id';
 
-    public $search;
+    public array $search;
 
-    public $perPage = 15;
+    public int $perPage = 15;
 
-    public $orderInSidebar = 100; // If false - resource hiding from sidebar
-
+    public int $orderInSidebar = 100; // If false - resource hiding from sidebar
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function query()
     {
@@ -40,7 +39,7 @@ abstract class Resource
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function indexQuery()
     {
@@ -48,7 +47,7 @@ abstract class Resource
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function searchQuery()
     {
@@ -56,9 +55,9 @@ abstract class Resource
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return Model
      */
-    public function newModel()
+    public function newModel(): Model
     {
         $className = $this->model;
 
@@ -66,18 +65,18 @@ abstract class Resource
     }
 
     /**
-     * @param  string  $id
-     * @return \Illuminate\Database\Eloquent\Model
+     * @param string|int $id
+     * @return Model
      */
-    public function findModel($id)
+    public function findModel($id): Model
     {
         return $this->query()->findOrFail($id);
     }
 
     /**
-     * @return \KiryaDev\Admin\Filters\Filterable[]
+     * @return Filterable[]
      */
-    public function filters()
+    public function filters(): array
     {
         return [];
     }
@@ -85,24 +84,29 @@ abstract class Resource
     /**
      * Get title of object via title field.
      *
-     * @param  Model|string  $object
+     * @param Model|string $object
      * @return string
      */
-    public function title($object)
+    public function title($object): string
     {
-        if (! $object) return null;
+        if (!$object) {
+            return '';
+        }
 
-        if (! $object instanceof Model) $object = $this->findModel($object);
+        if (!$object instanceof Model) {
+            $object = $this->findModel($object);
+        }
 
-        return $object->{$this->title};
+        return (string)$object->{$this->title};
     }
 
     /**
      * Generate title for action.
      *
+     * @param string $action
      * @return string
      */
-    public static function actionLabel($action)
+    public static function actionLabel(string $action): string
     {
         return __(':action ' . static::label(), ['action' => __($action)]);
     }
@@ -112,27 +116,27 @@ abstract class Resource
      *
      * @return string
      */
-    public function modelName()
+    public function modelName(): string
     {
         return class_basename($this->model);
     }
 
     /**
-     * Retrive instance of current resource.
-     *
-     * @return self
+     * @return static
      */
-    public static function instance()
+    public static function instance(): self
     {
-        return Core::resourceByKey(static::uriKey());
+        return AdminCore::resourceByKey(static::uriKey());
     }
 
     /**
      * Generate url to action.
      *
+     * @param string $route
+     * @param array $params
      * @return string
      */
-    public static function makeUrl($route, $params = [])
+    public static function makeUrl(string $route, array $params = []): string
     {
         $params['resource'] = $params['resource'] ?? static::uriKey();
 
@@ -140,12 +144,10 @@ abstract class Resource
     }
 
     /**
-     * Make new filter provider
-     *
      * @param  string  $prefix
      * @return FilterProvider
      */
-    public function newFilterProvider($prefix = '')
+    public function newFilterProvider($prefix = ''): FilterProvider
     {
         return new FilterProvider($this, $prefix);
     }

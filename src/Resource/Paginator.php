@@ -2,57 +2,32 @@
 
 namespace KiryaDev\Admin\Resource;
 
-
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder as LaravelQueryBuilder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use KiryaDev\Admin\Fields\FieldElement;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Paginator
 {
-    /**
-     * Laravel Paginator
-     *
-     * @var LengthAwarePaginator
-     */
-    private $lengthAwarePaginator;
+    /** Laravel Paginator */
+    private LengthAwarePaginator $lengthAwarePaginator;
 
-    /**
-     * Current order column
-     *
-     * @var array
-     */
-    private $order;
+    /** Current order column */
+    private string $order;
 
-    /**
-     * Current order direction
-     *
-     * @var array
-     */
-    private $dir;
+    /** Current order direction  */
+    private string $dir;
 
-    /**
-     * Current request path
-     *
-     * @var string
-     */
-    private $path;
+    /**Current request path */
+    private string $path;
 
-    /**
-     * Current request query
-     *
-     * @var array
-     */
-    private $query;
+    /** Current request query */
+    private array $query;
 
-    /**
-     * Prefix for Paginator (if any Paginator in request)
-     *
-     * @var string
-     */
-    private $prefix;
-
+    /**Prefix for Paginator (if any Paginator in request) */
+    private string $prefix;
 
     /**
      * Paginator constructor.
@@ -62,14 +37,13 @@ class Paginator
      * @param string $prefix
      * @param array $query
      */
-    public function __construct($builder, $perPage, $prefix = '', array $query = [])
+    public function __construct($builder, int $perPage, string $prefix = '', array $query = [])
     {
         $this->path = LengthAwarePaginator::resolveCurrentPath();
 
         $this->prefix = $prefix;
 
         $this->query = $query;
-
 
         $qb = $this->getQueryBuilder($builder);
 
@@ -78,7 +52,7 @@ class Paginator
             $this->prefixed('dir'),
         ]);
 
-        if (count($orders) == 2) {
+        if (\count($orders) === 2) {
             // Clear previous order
             $qb->orders = [];
             // Set order from request
@@ -99,13 +73,17 @@ class Paginator
      * Resolves Query Builder
      *
      * @param $builder
-     * @return \Illuminate\Database\Query\Builder
+     * @return LaravelQueryBuilder
      */
-    private function getQueryBuilder($builder)
+    private function getQueryBuilder($builder): LaravelQueryBuilder
     {
-        if ($builder instanceof Relation) $builder = $builder->getQuery();
+        if ($builder instanceof Relation) {
+            $builder = $builder->getQuery();
+        }
 
-        if ($builder instanceof Builder) return $builder->getQuery();
+        if ($builder instanceof Builder) {
+            return $builder->getQuery();
+        }
 
         throw new \RuntimeException(
             sprintf('Non query class %s.', get_class($builder))
@@ -115,10 +93,10 @@ class Paginator
     /**
      * Return prefixed var name.
      *
-     * @param  strin  $var
+     * @param string $var
      * @return string
      */
-    private function prefixed($var)
+    private function prefixed(string $var): string
     {
         return $this->prefix . $var;
     }
@@ -149,8 +127,8 @@ class Paginator
         return $this->path
             . '?'
             . Arr::query($this->query + [
-                $this->prefixed('order') => $field->name,
-                $this->prefixed('dir') => $dir,
-            ]);
+                    $this->prefixed('order') => $field->name,
+                    $this->prefixed('dir') => $dir,
+                ]);
     }
 }

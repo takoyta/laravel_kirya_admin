@@ -2,14 +2,13 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
-use KiryaDev\Admin\Core;
 use Illuminate\Support\Facades\DB;
+use KiryaDev\Admin\AdminCore;
 use KiryaDev\Admin\Http\Requests\DeleteResourceRequest;
 
 class ResourceDeleteController
 {
     use HasConfirmation;
-
 
     public function handle(DeleteResourceRequest $request)
     {
@@ -17,20 +16,22 @@ class ResourceDeleteController
         $resource = $request->resource();
         $objectTitle = $resource->title($object);
 
-        if (! $this->isConfirmed($request)) {
+        if (!$this->isConfirmed($request)) {
             return $this->renderConfirm($resource->actionLabel('Delete') . ' ' . $objectTitle, $resource);
         }
 
         try {
-            DB::transaction(function () use ($object) {
+            DB::transaction(static function () use ($object) {
                 // fixme: delete image via Fields\Image
 
                 $object->delete();
             });
         } catch (\Exception $e) {
-            if (app()->isLocal()) throw $e;
+            if (app()->isLocal()) {
+                throw $e;
+            }
 
-            return Core::redirectToPrevious()->with('error', $e->getMessage());
+            return AdminCore::redirectToPrevious()->with('error', $e->getMessage());
         }
 
         return redirect($resource->makeUrl('list'))

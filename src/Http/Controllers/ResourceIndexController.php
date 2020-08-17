@@ -2,10 +2,7 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
-
 use KiryaDev\Admin\Resource\Paginator;
-use KiryaDev\Admin\Fields\ActionsField;
-use KiryaDev\Admin\Fields\Text as SearchField;
 use KiryaDev\Admin\Http\Requests\IndexResourceRequest;
 
 class ResourceIndexController
@@ -28,7 +25,7 @@ class ResourceIndexController
         );
 
         // Paginate results
-        $paginator = new Paginator($query, $resource->perPage, null, $filterProvider->query());
+        $paginator = new Paginator($query, $resource->perPage, '', $filterProvider->query());
 
         return view('admin::resource.index', compact(
             'resource',

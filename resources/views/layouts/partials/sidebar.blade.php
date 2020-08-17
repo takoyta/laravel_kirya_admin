@@ -6,7 +6,7 @@
 
     @php($currentResourceUriKey = isset($resource) ? $resource->uriKey() : 'index')
 
-    @foreach(app('admin')->menu() as $group => $resources)
+    @foreach(app('admin.core')->getMenu() as $group => $resources)
         <div class="mb-3">
             <div class="sidebar-group mb-1 px-4">{!! __($group) !!}</div>
 

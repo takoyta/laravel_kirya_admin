@@ -2,15 +2,13 @@
 
 namespace KiryaDev\Admin\Fields;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use KiryaDev\Admin\Resource\AbstractResource;
 
 class BelongsToMany extends HasMany
 {
-    /**
-     * @param  \KiryaDev\Admin\Resource\Resource  $resource
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return object
-     */
-    protected function actions($resource, $object)
+    protected function actions(AbstractResource $resource, Model $object): Collection
     {
         $abilitySuffix = $this->relatedResource->modelName();
         $attachTitle = $this->relatedResource->actionLabel('Attach');
@@ -27,12 +25,7 @@ class BelongsToMany extends HasMany
         return $this->wrapActions($actions, $object);
     }
 
-    /**
-     * @param  \KiryaDev\Admin\Resource\Resource  $resource
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return \Illuminate\Support\Collection
-     */
-    protected function fields($resource, $object)
+    protected function fields(AbstractResource $resource, Model $object): Collection
     {
         $detachTitle = $this->relatedResource->actionLabel('Detach');
 

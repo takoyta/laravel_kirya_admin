@@ -2,18 +2,16 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
-use KiryaDev\Admin\Http\Requests\AddRelatedResourceRequest;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use KiryaDev\Admin\Resource\AbstractResource;
 
 class MorphMany extends HasMany
 {
     /**
      * Name of reverse relation field in Resource.
-     *
-     * @var string
      */
-    public $reverseName;
-
+    public string $reverseName;
 
     public function __construct($title, $related, $resource, $name)
     {
@@ -22,12 +20,7 @@ class MorphMany extends HasMany
         $this->reverseName = $name;
     }
 
-    /**
-     * @param  \KiryaDev\Admin\Resource\Resource    $resource
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return \Illuminate\Support\Collection
-     */
-    protected function fields($resource, $object)
+    protected function fields(AbstractResource $resource, Model $object): Collection
     {
         return $this
             ->relatedResource

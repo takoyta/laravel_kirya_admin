@@ -4,8 +4,8 @@ namespace KiryaDev\Admin\Fields;
 
 
 use Illuminate\Support\Str;
-use KiryaDev\Admin\Traits\HasRules;
 use KiryaDev\Admin\Traits\HasDisabled;
+use KiryaDev\Admin\Traits\HasRules;
 
 abstract class FieldElement extends Element
 {
@@ -47,7 +47,7 @@ abstract class FieldElement extends Element
 
 
     /**
-     * @param  string  ...$rules
+     * @param string ...$rules
      * @return static
      */
     public function rules(...$rules)
@@ -60,7 +60,7 @@ abstract class FieldElement extends Element
     /**
      * Null value not display.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback
      * @return static
      */
     public function displayUsing(\Closure $callback)
@@ -73,7 +73,7 @@ abstract class FieldElement extends Element
     /**
      * Null value not resolvings.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback
      * @return static
      */
     public function resolveUsing(\Closure $callback)
@@ -84,7 +84,7 @@ abstract class FieldElement extends Element
     }
 
     /**
-     * @param  \Closure  $callback
+     * @param \Closure $callback
      * @return static
      */
     public function fillUsing(\Closure $callback)
@@ -105,7 +105,7 @@ abstract class FieldElement extends Element
     }
 
     /**
-     * @param  string  $text
+     * @param string $text
      * @return static
      */
     public function help($text)
@@ -116,7 +116,7 @@ abstract class FieldElement extends Element
     }
 
     /**
-     * @param  mixed  $object
+     * @param mixed $object
      * @return mixed
      */
     public function display($object)
@@ -131,7 +131,7 @@ abstract class FieldElement extends Element
     }
 
     /**
-     * @param  mixed  $object
+     * @param mixed $object
      * @return mixed
      */
     public function formInputView($object)
@@ -142,7 +142,7 @@ abstract class FieldElement extends Element
     }
 
     /**
-     * @param  mixed  $object
+     * @param mixed $object
      * @return mixed
      */
     protected function resolve($object)
@@ -151,6 +151,6 @@ abstract class FieldElement extends Element
             return null;
         }
 
-        return is_null($fn = $this->resolveCallback) ? $value: $fn($value);
+        return is_null($fn = $this->resolveCallback) ? $value : $fn($value);
     }
 }

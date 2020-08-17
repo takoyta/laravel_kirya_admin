@@ -2,6 +2,8 @@
 
 namespace KiryaDev\Admin\Fields;
 
+use Illuminate\Database\Eloquent\Model;
+use KiryaDev\Admin\Resource\AbstractResource;
 
 class Panel extends Element
 {
@@ -15,7 +17,7 @@ class Panel extends Element
         $this->fields = $fields;
     }
 
-    public function display($resource, $object)
+    public function display(AbstractResource $resource, Model $object)
     {
         $panel = $this;
 

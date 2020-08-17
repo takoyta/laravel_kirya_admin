@@ -2,59 +2,33 @@
 
 namespace KiryaDev\Admin\Filters;
 
-
-use KiryaDev\Admin\Fields;
-use Illuminate\Support\Arr;
-use KiryaDev\Admin\Resource\Search;
-use KiryaDev\Admin\Resource\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Arr;
+use KiryaDev\Admin\Fields;
+use KiryaDev\Admin\Resource\AbstractResource;
+use KiryaDev\Admin\Resource\Search;
 
 class FilterProvider
 {
-    /**
-     * @var Resource
-     */
-    private $resource;
+    private AbstractResource $resource;
 
-    /**
-     * @var Fields\Text
-     */
-    public $searchField;
+    public ?Fields\Text $searchField = null;
 
-    /**
-     * @var Fields\FieldElement[]
-     */
-    public $fields = [];
+    /**  @var Fields\FieldElement[] */
+    public array $fields = [];
 
-    /**
-     * @var \KiryaDev\Admin\Filters\Filterable[]
-     */
-    private $filters = [];
+    /**  @var Filterable[] */
+    private array $filters = [];
 
-    /**
-     * @var string
-     */
-    private $prefix;
+    private string $prefix;
 
-    /**
-     * @var string[]
-     */
-    private $values = [];
+    /** @var string[] */
+    private array $values = [];
 
-    /**
-     * @var int
-     */
-    public $appliedFiltersCount = 0;
+    public int $appliedFiltersCount = 0;
 
-
-    /**
-     * FilterProvider constructor.
-
-     * @param  Resource          $resource
-     * @param  string            $prefix
-     */
-    public function __construct(Resource $resource, string $prefix)
+    public function __construct(AbstractResource $resource, string $prefix)
     {
         $this->resource = $resource;
         $this->prefix = $prefix;
@@ -79,7 +53,7 @@ class FilterProvider
     /**
      * Return query value for displaying this fields.
      *
-     * @param  strin  $name
+     * @param string $name
      * @return mixed
      */
     public function __get($name)
@@ -90,10 +64,10 @@ class FilterProvider
     /**
      * Return prefixed var name.
      *
-     * @param  strin  $var
+     * @param string $var
      * @return string
      */
-    public function prefixed($var)
+    public function prefixed($var): string
     {
         return $this->prefix . $var;
     }
@@ -114,14 +88,14 @@ class FilterProvider
     }
 
     /**
-     * @param  Builder|Relation  $builder
+     * @param Builder|Relation $builder
      * @return static
      */
     public function apply($builder)
     {
         $this->appliedFiltersCount = 0;
 
-        // Retrive search value
+        // Retrieve search value
         if ($this->searchField && $term = $this->query($name = $this->searchField->name)) {
             // Apply
             Search::deepSearch($builder, $this->resource->search, $term);
@@ -129,7 +103,7 @@ class FilterProvider
             $this->values[$name] = $term;
         }
 
-        // Retrive filters values
+        // Retrieve filters values
         foreach ($this->filters as $name => $filter) {
             if ($value = $this->query($name)) {
                 if ($fn = $this->fields[$name]->fillCallback) {

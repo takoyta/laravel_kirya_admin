@@ -2,10 +2,9 @@
 
 namespace KiryaDev\Admin\Http\Requests;
 
-
 class CreateResourceRequest extends ResourceRequest
 {
-    public function authorize()
+    public function authorize(): bool
     {
         return $this->resource()->authorizedTo('create');
     }

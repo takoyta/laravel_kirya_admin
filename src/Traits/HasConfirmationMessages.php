@@ -2,13 +2,11 @@
 
 namespace KiryaDev\Admin\Traits;
 
-
 use Illuminate\Support\Arr;
 
 trait HasConfirmationMessages
 {
-    public $confirmationMessages = [];
-
+    public array $confirmationMessages = [];
 
     public function getConfirmationMessage($action)
     {

@@ -2,7 +2,7 @@
 
 namespace KiryaDev\Admin\Traits;
 
-
+use Illuminate\Support\Collection;
 use KiryaDev\Admin\Actions\Actionable;
 use KiryaDev\Admin\Fields\ActionsField;
 use KiryaDev\Admin\Resource\ActionLink;
@@ -12,51 +12,34 @@ trait ResourceActions
     /**
      * @return Actionable[]
      */
-    public function actions()
+    public function actions(): array
     {
         return [];
     }
 
-    /**
-     * @param string $abilitySuffix
-     * @param array $params
-     * @return \Illuminate\Support\Collection
-     */
-    public function getActionLinksForHandleMany($abilitySuffix = '', $params = [])
+    public function getActionLinksForHandleMany(string $abilitySuffix = '', $params = []): Collection
     {
         return $this->getActionLinks('handleMany', $abilitySuffix, $params);
     }
 
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    public function getActionLinksForHandleOneFromDetail()
+    public function getActionLinksForHandleOneFromDetail(): Collection
     {
         return $this->getActionLinks('handleOneFromDetail');
     }
 
-    /**
-     * @return ActionsField
-     */
-    public function getIndexActionsField()
+    public function getIndexActionsField(): ActionsField
     {
         return ActionsField::with(
             $this
                 ->getActionLinks('handleOneFromIndex')
                 ->add($this->makeActionLink('detail', 'view')->icon('eye')->displayAsLink())
-            );
+        );
     }
 
-    /**
-     * @param  $method  string
-     * @param  $route   string
-     * @param  $params  array
-     * @return \Illuminate\Support\Collection
-     */
-    private function getActionLinks($method, $abilitySuffix = '', $params = [])
+    private function getActionLinks(string $method, string $abilitySuffix = '', $params = []): Collection
     {
         return collect($this->actions())
-            ->filter(function ($action) use ($method) {
+            ->filter(static function ($action) use ($method) {
                 return method_exists($action, $method);
             })
             ->map(function (Actionable $action) use ($abilitySuffix, $params) {
@@ -69,13 +52,7 @@ trait ResourceActions
             });
     }
 
-    /**
-     * @param  string  $route
-     * @param  string  $ability
-     * @param  string  $title
-     * @return \KiryaDev\Admin\Resource\ActionLink
-     */
-    public function makeActionLink($route, $ability = null, $title = null)
+    public function makeActionLink(string $route, string $ability = null, string $title = null): ActionLink
     {
         return new ActionLink($this, $route, $ability, $title);
     }

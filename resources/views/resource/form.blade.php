@@ -12,7 +12,7 @@
     <form method="POST" enctype="multipart/form-data" action="" id="form">
         @csrf
 
-        @php([$key, $value] = $retrivedAt)
+        @php([$key, $value] = $retrievedAt)
         <input type="hidden" name="{!! $key !!}" value="{!! $value !!}">
 
         @foreach($panels as $panel) {!! $panel->displayForm($object) !!} @endforeach

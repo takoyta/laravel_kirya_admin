@@ -2,17 +2,12 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
-
-use KiryaDev\Admin\Core;
-use KiryaDev\Admin\Traits;
-use KiryaDev\Admin\Fields\Panel;
-use KiryaDev\Admin\Fields\HasMany;
+use KiryaDev\Admin\AdminCore;
 use KiryaDev\Admin\Http\Requests\ActionResourceRequest;
 
 class ResourceActionController
 {
     use HasConfirmation;
-
 
     /**
      * @param ActionResourceRequest $request
@@ -47,7 +42,7 @@ class ResourceActionController
 
         if ($request->from) {
             $query = $resource->findModel($request->id)->{$request->relation}();
-            $resource = Core::resourceByKey($request->resource);
+            $resource = AdminCore::resourceByKey($request->resource);
 
             $resource->newFilterProvider($request->relation . '_')->apply($query);
         } else {

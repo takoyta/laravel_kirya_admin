@@ -2,8 +2,6 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
-
-use KiryaDev\Admin\Core;
 use KiryaDev\Admin\Http\Requests\AttachRelatedResourceRequest;
 
 class AttachRelatedController

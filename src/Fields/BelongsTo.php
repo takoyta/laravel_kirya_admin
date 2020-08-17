@@ -2,16 +2,11 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
-use KiryaDev\Admin\Core;
+use KiryaDev\Admin\Resource\AbstractResource;
 
 class BelongsTo extends FieldElement
 {
-    /**
-     * @var \KiryaDev\Admin\Resource\Resource
-     */
-    public $relatedResource;
-
+    public AbstractResource $relatedResource;
 
     protected function __construct($title, $name, $resource)
     {
@@ -55,8 +50,8 @@ class BelongsTo extends FieldElement
         return optional($object->{$this->name})->getKey();
     }
 
-    public function getAllowClear()
+    public function getAllowClear(): bool
     {
-        return ! $this->disabled && false === array_search('required', $this->creationRules); // fixme: can also updateRules
+        return ! $this->disabled && !in_array('required', $this->creationRules, true); // fixme: can also updateRules
     }
 }

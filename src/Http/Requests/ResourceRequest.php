@@ -2,26 +2,26 @@
 
 namespace KiryaDev\Admin\Http\Requests;
 
-use KiryaDev\Admin\Core;
-use Illuminate\Support\Facades\Route;
+use KiryaDev\Admin\AdminCore;
 use Illuminate\Foundation\Http\FormRequest;
+use KiryaDev\Admin\Resource\AbstractResource;
 
 /**
  * @property string resource
  */
 abstract class ResourceRequest extends FormRequest
 {
-    public function resource()
+    public function resource(): AbstractResource
     {
-        return Core::resourceByKey($this->resource);
+        return AdminCore::resourceByKey($this->resource);
     }
 
-    public function authorize()
+    public function authorize(): bool
     {
         return $this->resource()->authorizedToViewAny();
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [];
     }

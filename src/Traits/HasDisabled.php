@@ -2,7 +2,6 @@
 
 namespace KiryaDev\Admin\Traits;
 
-
 trait HasDisabled
 {
     /**

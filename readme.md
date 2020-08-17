@@ -2,4 +2,4 @@
 
 -  After install please run:
 
-`php artisan vendor:publish --provider="KiryaDev\Admin\ServiceProvider"`
+`php artisan vendor:publish --provider="KiryaDev\Admin\AdminServiceProvider"`

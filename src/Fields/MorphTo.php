@@ -2,16 +2,15 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
-use KiryaDev\Admin\Core;
+use KiryaDev\Admin\AdminCore;
+use KiryaDev\Admin\Resource\AbstractResource;
 
 class MorphTo extends FieldElement
 {
     /**
-     * @var \KiryaDev\Admin\Resource\Resource[]
+     * @var AbstractResource[]
      */
-    protected $modelToResourceMap;
-
+    protected array $modelToResourceMap;
 
     protected function boot()
     {
@@ -30,11 +29,11 @@ class MorphTo extends FieldElement
             return [$this->resolveResourceByObject($value)::uriKey() => $value->getKey()];
         });
 
-        $this->fillUsing(function ($oject, $value) {
+        $this->fillUsing(function ($object, $value) {
             // fixme: check value is available id
 
             /** @var \Illuminate\Database\Eloquent\Relations\MorphTo $relation */
-            $relation = $oject->{$this->name}();
+            $relation = $object->{$this->name}();
 
             $relation->associate(
                 $this->getObjectByValue($value)
@@ -48,7 +47,7 @@ class MorphTo extends FieldElement
 
         foreach ($types as $type) {
             // fixme check resource access
-            $resource = Core::resourceByKey($type::uriKey());
+            $resource = AdminCore::resourceByKey($type::uriKey());
 
             $this->modelToResourceMap[$resource->model] = $resource;
         }
@@ -71,7 +70,7 @@ class MorphTo extends FieldElement
         return $options;
     }
 
-    protected function resolveResourceByObject($object)
+    protected function resolveResourceByObject($object): AbstractResource
     {
         return $this->modelToResourceMap[get_class($object)];
     }
@@ -79,7 +78,7 @@ class MorphTo extends FieldElement
     public function getObjectByValue($value)
     {
         if (is_array($value)) {
-            return Core::resourceByKey($key = key($value))->findModel($value[$key]);
+            return AdminCore::resourceByKey($key = key($value))->findModel($value[$key]);
         }
 
         return null;

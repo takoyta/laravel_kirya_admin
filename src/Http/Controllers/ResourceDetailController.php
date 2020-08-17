@@ -2,7 +2,6 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
-
 use KiryaDev\Admin\Http\Requests\DetailResourceRequest;
 
 class ResourceDetailController

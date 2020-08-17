@@ -2,38 +2,27 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
-use KiryaDev\Admin\Resource\Paginator;
-use KiryaDev\Admin\Fields\ActionsField;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use KiryaDev\Admin\Filters\FilterProvider;
+use KiryaDev\Admin\Resource\AbstractResource;
+use KiryaDev\Admin\Resource\Paginator;
 
 class HasMany extends Panel
 {
-    protected $perPage = 5;
-
-    public $name;
-
-    /**
-     * @var \KiryaDev\Admin\Resource\Resource
-     */
-    public $relatedResource;
-
+    protected int $perPage = 5;
+    public string $name;
+    public AbstractResource $relatedResource;
 
     protected function __construct($title, $name, $resource)
     {
         parent::__construct($title, []);
 
         $this->name = $name;
-
         $this->relatedResource = $resource::instance();
     }
 
-    /**
-     * @param  \KiryaDev\Admin\Resource\Resource    $resource
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return string
-     */
-    public function display($resource, $object)
+    public function display(AbstractResource $resource, Model $object)
     {
         $title = $this->title;
 
@@ -41,7 +30,7 @@ class HasMany extends Panel
 
         [$relation, $filterProvider] = $this->getRelationAndFilterProvider($object);
 
-        $paginator = new Paginator($relation, $this->perPage, $this->name.'_', $filterProvider->query());
+        $paginator = new Paginator($relation, $this->perPage, $this->name . '_', $filterProvider->query());
 
         return view($this->resolveFormView(), compact(
             'resource',
@@ -54,7 +43,7 @@ class HasMany extends Panel
             ->with('actions', $this->actions($resource, $object));
     }
 
-    public function getRelationAndFilterProvider($object)
+    public function getRelationAndFilterProvider($object): array
     {
         return [$this->getRelation($object, $filter = $this->getFilterProvider()), $filter];
     }
@@ -63,22 +52,17 @@ class HasMany extends Panel
     {
         $filter = $filter ?? $this->getFilterProvider();
 
-        return tap($object->{$this->name}(), function ($query) use ($filter) {
+        return tap($object->{$this->name}(), static function ($query) use ($filter) {
             $filter->apply($query);
         });
     }
 
-    private function getFilterProvider()
+    private function getFilterProvider(): FilterProvider
     {
-        return $this->relatedResource->newFilterProvider($this->name.'_');
+        return $this->relatedResource->newFilterProvider($this->name . '_');
     }
 
-    /**
-     * @param  \KiryaDev\Admin\Resource\Resource    $resource
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return object
-     */
-    protected function actions($resource, $object)
+    protected function actions(AbstractResource $resource, Model $object): Collection
     {
         $abilitySuffix = $this->relatedResource->modelName();
         $addTitle = $this->relatedResource->actionLabel('Add');
@@ -97,20 +81,22 @@ class HasMany extends Panel
     /**
      * Wrap action into anonymous class for displaying from template.
      *
-     * @param  array  $actions
-     * @param  mixed  $object
-     * @return \Illuminate\Support\Collection
+     * @param Collection $actions
+     * @param mixed $object
+     * @return Collection
      */
-    protected function wrapActions($actions, $object)
+    protected function wrapActions(Collection $actions, $object)
     {
-        return collect($actions)->map(function ($action) use ($object) {
+        return $actions->map(function ($action) use ($object) {
             return tap(new class {
                 public $action;
                 public $object;
-                public function display() {
+
+                public function display()
+                {
                     return $this->action->display($this->object);
                 }
-            }, function ($wrapper) use ($action, $object) {
+            }, static function ($wrapper) use ($action, $object) {
                 $wrapper->action = $action;
                 $wrapper->object = $object;
             });
@@ -123,17 +109,17 @@ class HasMany extends Panel
      *  For MorphMany requires exclude MorphTo,
      *  For BelongsToMany requires add actions "Attach" & "Detach".
      *
-     * @param  \KiryaDev\Admin\Resource\Resource    $resource
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return \Illuminate\Support\Collection
+     * @param AbstractResource $resource
+     * @param Model $object
+     * @return Collection
      */
-    protected function fields($resource, $object)
+    protected function fields(AbstractResource $resource, Model $object): Collection
     {
         return $this
             ->relatedResource
             ->getIndexFields()
-            ->filter(function ($field) use ($resource) {
-                return ! ($field instanceof BelongsTo && $field->relatedResource === $resource); //exclude reverse relation
+            ->filter(static function ($field) use ($resource) {
+                return !($field instanceof BelongsTo && $field->relatedResource === $resource); //exclude reverse relation
             })
             ->add($this->relatedResource->getIndexActionsField());
     }
@@ -144,7 +130,11 @@ class HasMany extends Panel
         return null;
     }
 
-    public function perPage($count)
+    /**
+     * @param int $count
+     * @return static
+     */
+    public function perPage(int $count)
     {
         $this->perPage = $count;
 
