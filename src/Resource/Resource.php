@@ -1,6 +1,6 @@
-<?php
-namespace KiryaDev\Admin\Resource;
+<?php declare(strict_types=1);
 
+namespace KiryaDev\Admin\Resource;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
