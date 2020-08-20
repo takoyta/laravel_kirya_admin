@@ -22,6 +22,10 @@ class AdminServiceProvider extends BaseServiceProvider
             return new AdminCore;
         });
 
+        $this->app->singleton('admin.asset', static function () {
+            return new AdminAsset();
+        });
+
         $this->registerAuthRoutes();
 
         $this->registerResourceRoutes();
