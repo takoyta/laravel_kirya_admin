@@ -2,7 +2,8 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
+use Closure;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use KiryaDev\Admin\Traits\HasDisabled;
 use KiryaDev\Admin\Traits\HasRules;
@@ -12,31 +13,25 @@ abstract class FieldElement extends Element
     use HasRules, HasDisabled;
 
     /**
-     * @var \Closure|string
+     * @var Closure|string
      */
     public $name;
 
-    public $computed = false;
+    public bool $computed = false;
 
-    /**
-     * Callback not call when value is null.
-     *
-     * @var \Closure|null
-     */
-    protected $displayCallback;
-    protected $resolveCallback;
-    public $fillCallback;
+    protected ?Closure $displayCallback = null;
+    protected ?Closure $resolveCallback = null;
+    protected ?Closure $fillCallback = null;
 
-    public $sortable = false;
+    public bool $sortable = false;
 
-    public $help;
-
+    public string $help = '';
 
     protected function __construct($title, $name = null)
     {
         parent::__construct($title);
 
-        if ($name instanceof \Closure) {
+        if ($name instanceof Closure) {
             $this->computed = true;
         } else {
             $name = $name ?? Str::snake($title);
@@ -45,12 +40,7 @@ abstract class FieldElement extends Element
         $this->name = $name;
     }
 
-
-    /**
-     * @param string ...$rules
-     * @return static
-     */
-    public function rules(...$rules)
+    final public function rules(...$rules)
     {
         return $this
             ->creationRules(...$rules)
@@ -58,12 +48,9 @@ abstract class FieldElement extends Element
     }
 
     /**
-     * Null value not display.
-     *
-     * @param \Closure $callback
-     * @return static
+     * Callback arguments: Model $object, mixed $resolvedValue
      */
-    public function displayUsing(\Closure $callback)
+    final public function displayUsing(Closure $callback)
     {
         $this->displayCallback = $callback;
 
@@ -71,12 +58,9 @@ abstract class FieldElement extends Element
     }
 
     /**
-     * Null value not resolvings.
-     *
-     * @param \Closure $callback
-     * @return static
+     * Callback arguments: Model $object
      */
-    public function resolveUsing(\Closure $callback)
+    final public function resolveUsing(Closure $callback)
     {
         $this->resolveCallback = $callback;
 
@@ -84,73 +68,72 @@ abstract class FieldElement extends Element
     }
 
     /**
-     * @param \Closure $callback
-     * @return static
+     * Callback arguments: Model $object, mixed $requestValue
      */
-    public function fillUsing(\Closure $callback)
+    final public function fillUsing(Closure $callback)
     {
         $this->fillCallback = $callback;
 
         return $this;
     }
 
-    /**
-     * @return static
-     */
-    public function sortable()
+    final public function sortable()
     {
         $this->sortable = true;
 
         return $this;
     }
 
-    /**
-     * @param string $text
-     * @return static
-     */
-    public function help($text)
+    final public function help(string $text)
     {
         $this->help = $text;
 
         return $this;
     }
 
-    /**
-     * @param mixed $object
-     * @return mixed
-     */
-    public function display($object)
+    public function display(Model $object)
     {
-        if ($this->computed)
-            return call_user_func($this->name, $object);
+        if ($this->computed) {
+            return ($this->name)($object);
+        }
 
-        if (is_null($value = $object->{$this->name}))
-            return null;
+        $value = $this->resolve($object);
+        if (null !== $value && null !== $this->displayCallback) {
+            $value = ($this->displayCallback)($object, $value);
+        }
 
-        return is_null($fn = $this->displayCallback) ? $value : $fn($value);
+        return $value;
     }
 
-    /**
-     * @param mixed $object
-     * @return mixed
-     */
-    public function formInputView($object)
+    public function formInputView(Model $object)
     {
         [$field, $value] = [$this, old($this->name, $this->resolve($object))];
 
         return view($this->resolveFormView(), compact('object', 'field', 'value'));
     }
 
-    /**
-     * @param mixed $object
-     * @return mixed
-     */
-    protected function resolve($object)
+    protected function resolve(Model $object)
     {
-        if (is_null($value = $object->{$this->name})) {
-            return null;
+        if (null !== $this->resolveCallback) {
+            return ($this->resolveCallback)($object);
         }
 
-        return is_null($fn = $this->resolveCallback) ? $value : $fn($value);
+        // Support json
+        $value = $object;
+        foreach (explode('->', $this->name) as $key) {
+            $value = $value->{$key};
+        }
+
+        return $value;
+    }
+
+    public function fill(Model $object, $value): void
+    {
+        if ($this->fillCallback) {
+            ($this->fillCallback)($object, $value);
+            return;
+        }
+
+        $object->{$this->name} = $value;
     }
 }

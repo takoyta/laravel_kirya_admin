@@ -2,13 +2,10 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
 class HasOne extends BelongsTo
 {
-    protected function boot()
+    protected function boot(): void
     {
-        parent::boot();
-
         $this->exceptOnForms(); // Has not editable field as HasMany
     }
 }

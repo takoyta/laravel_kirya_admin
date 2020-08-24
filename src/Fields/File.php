@@ -2,26 +2,25 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
 class File extends FieldElement
 {
-    public $accept = '*';
+    public string $accept = '*';
 
-    public $prefix = 'storage/files';
+    public string $prefix = 'storage/files';
 
-    public $nullable = true;
+    public bool $nullable = true;
 
-
-    protected function boot()
+    protected function boot(): void
     {
-        $this->displayUsing(function ($value) {
+        $this->displayUsing(static function (Model $object, $value) {
             return basename($value);
         });
 
-        $this->fillUsing(function ($object, $value) {
+        $this->fillUsing(function (Model $object, $value) {
             // delete current
             if (
                 ($value === 'unlink' || $value instanceof UploadedFile)
@@ -53,14 +52,14 @@ class File extends FieldElement
             . '.' . $ext;
     }
 
-    public function accept($accept)
+    public function accept(string $accept)
     {
         $this->accept = $accept;
 
         return $this;
     }
 
-    public function prefix($prefix)
+    public function prefix(string $prefix)
     {
         $this->prefix = $prefix;
 

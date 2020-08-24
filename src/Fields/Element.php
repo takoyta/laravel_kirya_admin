@@ -2,7 +2,6 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
 use Illuminate\Support\Str;
 
 abstract class Element
@@ -29,7 +28,9 @@ abstract class Element
         $this->boot();
     }
 
-    protected function boot() {}
+    protected function boot(): void
+    {
+    }
 
     public function onlyOnIndex()
     {

@@ -2,6 +2,7 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
+use Illuminate\Database\Eloquent\Model;
 use KiryaDev\Admin\AdminCore;
 use KiryaDev\Admin\Http\Requests\ActionResourceRequest;
 
@@ -18,14 +19,16 @@ class ResourceActionController
         $resource = $request->resource();
         $action = $request->resolveAction();
 
-        if ($action->requireConfirmation) {
+        $virtualModel = new class extends Model {
+        };
 
-            if (! $this->isConfirmed($request)) {
-                return $this->renderConfirm($action->label(), $resource, $action->getFormPanels(optional()));
+        if ($action->requireConfirmation) {
+            if (!$this->isConfirmed($request)) {
+                return $this->renderConfirm($action->label(), $resource, $action->getFormPanels($virtualModel));
             }
 
             // Just validate, but for get values use request in your needs
-            $action->validateOnFields($request, optional());
+            $action->validateOnFields($request, $virtualModel);
             // fixme - run fillCallback on each field
             // pass value to handle
         }
@@ -37,7 +40,11 @@ class ResourceActionController
                 return $action->handleOneFromIndex($resource, $object, $request);
             }
 
-            return $action->handleOneFromDetail($resource, $object, $request);
+            if (method_exists($action, 'handleOneFromDetail')) {
+                return $action->handleOneFromDetail($resource, $object, $request);
+            }
+
+            throw new \RuntimeException('No match method: handleOneFromIndex or handleOneFromDetail.');
         }
 
         if ($request->from) {

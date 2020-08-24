@@ -16,7 +16,7 @@
                 {!! $field->title !!}
             </div>
             <div class="p-2">
-                {!! $field->formInputView($filterProvider) !!}
+                {!! $field->formInputView($filterProvider->virtualModel) !!}
             </div>
         @endforeach
 

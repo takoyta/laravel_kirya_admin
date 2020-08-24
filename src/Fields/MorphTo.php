@@ -2,6 +2,7 @@
 
 namespace KiryaDev\Admin\Fields;
 
+use Illuminate\Database\Eloquent\Model;
 use KiryaDev\Admin\AdminCore;
 use KiryaDev\Admin\Resource\AbstractResource;
 
@@ -12,33 +13,45 @@ class MorphTo extends FieldElement
      */
     protected array $modelToResourceMap;
 
-    protected function boot()
+    public function display(Model $object)
     {
-        $this->displayUsing(function ($value) {
-            $resource = $this->resolveResourceByObject($value);
+        $relatedObject = $object->{$this->name};
+        if (null === $relatedObject) {
+            return null;
+        }
 
-            $title = __($resource::label()) . ': ' . $resource->title($value);
+        $resource = $this->resolveResourceByObject($relatedObject);
 
-            return $resource
-                ->makeActionLink('detail', 'view', $title)
-                ->displayAsLink()
-                ->display($value);
-        });
+        $title = __($resource::label()) . ': ' . $resource->title($relatedObject);
 
-        $this->resolveUsing(function ($value) {
-            return [$this->resolveResourceByObject($value)::uriKey() => $value->getKey()];
-        });
+        $value = $resource
+            ->makeActionLink('detail', 'view', $title)
+            ->displayAsLink()
+            ->display($relatedObject);
 
-        $this->fillUsing(function ($object, $value) {
-            // fixme: check value is available id
+        if ($this->displayCallback) {
+            $value = ($this->displayCallback)($relatedObject, $value);
+        }
 
-            /** @var \Illuminate\Database\Eloquent\Relations\MorphTo $relation */
-            $relation = $object->{$this->name}();
+        return $value;
+    }
 
-            $relation->associate(
-                $this->getObjectByValue($value)
-            );
-        });
+    protected function resolve(Model $object)
+    {
+        $value = $object->{$this->name};
+
+        return [$this->resolveResourceByObject($value)::uriKey() => $value->getKey()];
+    }
+
+    public function fill(Model $object, $value): void
+    {
+        /** @var \Illuminate\Database\Eloquent\Relations\MorphTo $relation */
+        $relation = $object->{$this->name}();
+
+        // fixme: check value is available id
+        $relation->associate(
+            $this->getObjectByValue($value)
+        );
     }
 
     public function types(array $types)

@@ -7,7 +7,7 @@
     @csrf
     <input type="hidden" name="_previous_url" value="{{ $previousUrl }}">
 
-    @foreach($panels as $panel) {!! $panel->displayForm(optional()) !!} @endforeach
+    @foreach($panels as $panel) {!! $panel->displayForm($virtualModel) !!} @endforeach
 
     <div class="panel">
         <div class="panel-item">

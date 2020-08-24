@@ -3,7 +3,7 @@
 <input
         type="text"
         name="{!! $field->name !!}"
-        value="{!! $value !!}"
+        value="{!! $value ? $value->format($field->format) : null !!}"
         placeholder="{!! $field->title !!}"
         class="panel-control"
         autocomplete="off"

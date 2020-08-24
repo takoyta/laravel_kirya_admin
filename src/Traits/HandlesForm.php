@@ -25,14 +25,9 @@ trait HandlesForm
             $this->ensureRetrievedAfterLastModified($request, $object);
 
             // Run fill callbacks
-            foreach ($resource->collapseFieldsFromPanels($object) as $field) {
-                /** @var FieldElement $field */
-                if ($fn = $field->fillCallback) {
-                    $fn($object, Arr::pull($data, $field->name));
-                }
+            foreach ($resource->getFormFields($object) as $field) {
+                $field->fill($object, $data[$field->name] ?? null);
             }
-
-            $object->forceFill($data);
 
             DB::transaction(static function () use ($object) {
                 $object->save();

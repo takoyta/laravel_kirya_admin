@@ -28,9 +28,10 @@ class HasMany extends Panel
 
         $fields = $this->fields($resource, $object);
 
-        [$relation, $filterProvider] = $this->getRelationAndFilterProvider($object);
-
-        $paginator = new Paginator($relation, $this->perPage, $this->name . '_', $filterProvider->query());
+        // For isolate filter if more than one filter on page.
+        $prefix = $this->name . '_';
+        $filterProvider = $this->relatedResource->newFilterProvider($prefix);
+        $paginator = new Paginator($this->getRelation($object, $filterProvider), $this->perPage, $prefix, $filterProvider->getValues());
 
         return view($this->resolveFormView(), compact(
             'resource',
@@ -43,23 +44,12 @@ class HasMany extends Panel
             ->with('actions', $this->actions($resource, $object));
     }
 
-    public function getRelationAndFilterProvider($object): array
+    private function getRelation(Model $object, FilterProvider $filter)
     {
-        return [$this->getRelation($object, $filter = $this->getFilterProvider()), $filter];
-    }
+        $relation = $object->{$this->name}();
+        $filter->apply($relation);
 
-    public function getRelation($object, FilterProvider $filter = null)
-    {
-        $filter = $filter ?? $this->getFilterProvider();
-
-        return tap($object->{$this->name}(), static function ($query) use ($filter) {
-            $filter->apply($query);
-        });
-    }
-
-    private function getFilterProvider(): FilterProvider
-    {
-        return $this->relatedResource->newFilterProvider($this->name . '_');
+        return $relation;
     }
 
     protected function actions(AbstractResource $resource, Model $object): Collection
@@ -82,10 +72,10 @@ class HasMany extends Panel
      * Wrap action into anonymous class for displaying from template.
      *
      * @param Collection $actions
-     * @param mixed $object
+     * @param Model $object
      * @return Collection
      */
-    protected function wrapActions(Collection $actions, $object)
+    protected function wrapActions(Collection $actions, Model $object)
     {
         return $actions->map(function ($action) use ($object) {
             return tap(new class {
@@ -124,7 +114,7 @@ class HasMany extends Panel
             ->add($this->relatedResource->getIndexActionsField());
     }
 
-    public function displayForm($object)
+    public function displayForm(Model $object)
     {
         // fixme : no need display this of forms
         return null;

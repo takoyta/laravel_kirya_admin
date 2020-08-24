@@ -2,7 +2,6 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
 class ID extends FieldElement
 {
     protected function __construct($title = 'ID', $name = 'id')
@@ -10,7 +9,7 @@ class ID extends FieldElement
         parent::__construct($title, $name);
     }
 
-    protected function boot()
+    protected function boot(): void
     {
         $this->exceptOnForms()->sortable();
     }

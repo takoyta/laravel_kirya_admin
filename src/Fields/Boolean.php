@@ -2,18 +2,18 @@
 
 namespace KiryaDev\Admin\Fields;
 
+use Illuminate\Database\Eloquent\Model;
 
 class Boolean extends FieldElement
 {
     protected $labelResolver;
 
-
-    protected function boot()
+    protected function boot(): void
     {
         $this->rules('boolean');
     }
 
-    public function display($object)
+    public function display(Model $object)
     {
         $value = parent::display($object);
 

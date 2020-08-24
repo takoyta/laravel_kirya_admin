@@ -10,7 +10,6 @@ class AddRelatedController
 {
     use HandlesForm;
 
-
     public function handle(AddRelatedResourceRequest $request)
     {
         $resource = $request->relatedResource();
@@ -20,12 +19,12 @@ class AddRelatedController
         // fixme  right use HasMany.. then when saving call $hasManyField->save($object)
         $field = $request->resolveRelatedField();
         $field->disable();
-        if ($field instanceof MorphTo) {
-            ($field->fillCallback)($object, [$request->resource => $request->id]);
-        } else {
-            ($field->fillCallback)($object, $request->id);
-        }
 
+        if ($field instanceof MorphTo) {
+            $field->fill($object, [$request->resource => $request->id]);
+        } else {
+            $field->fill($object, $request->id);
+        }
 
         return $this->doHandle(
             $request,

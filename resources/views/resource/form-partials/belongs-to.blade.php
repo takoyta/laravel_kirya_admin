@@ -12,7 +12,7 @@
         @endif
     </select>
 
-    @if(! $field->disabled && $filterProviderFields)
+    @if(! $field->disabled && count($filterProvider->fields) > 0)
         <div class="pr-1"></div>
 
         <div class="dropdown ml-1">
@@ -24,12 +24,12 @@
 
             <div class="dropdown-menu width-350px p-0">
 
-                @foreach($filterProviderFields as $filterField)
+                @foreach($filterProvider->fields as $filterField)
                     <div class="p-2 mt-1 item-heading">
                         {!! $filterField->title !!}
                     </div>
                     <div class="p-2">
-                        {!! $filterField->formInputView(optional()) !!}
+                        {!! $filterField->formInputView($filterProvider->virtualModel) !!}
                     </div>
                 @endforeach
 

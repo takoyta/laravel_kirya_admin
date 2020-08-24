@@ -2,6 +2,7 @@
 
 namespace KiryaDev\Admin\Fields;
 
+use Illuminate\Database\Eloquent\Model;
 use KiryaDev\Admin\Resource\AbstractResource;
 
 class BelongsTo extends FieldElement
@@ -15,43 +16,51 @@ class BelongsTo extends FieldElement
         $this->relatedResource = $resource::instance();
     }
 
-    protected function boot()
+    public function display(Model $object)
     {
-        $this->displayUsing(function ($relatedObject) {
-            $title = $this->relatedResource->title($relatedObject);
+        $relatedObject = $object->{$this->name};
+        if (null === $relatedObject) {
+            return null;
+        }
 
-            return $this
-                ->relatedResource
-                ->makeActionLink('detail', 'view', $title)
-                ->displayAsLink()
-                ->display($relatedObject);
-        });
+        $title = $this->relatedResource->title($relatedObject);
 
-        $this->fillUsing(function ($object, $value) {
-            // fixme: check value is available id
+        $value = $this
+            ->relatedResource
+            ->makeActionLink('detail', 'view', $title)
+            ->displayAsLink()
+            ->display($relatedObject);
 
-            /** @var \Illuminate\Database\Eloquent\Relations\BelongsTo $relation */
-            $relation = $object->{$this->name}();
+        if ($this->displayCallback) {
+            $value = ($this->displayCallback)($relatedObject, $value);
+        }
 
-            $relation->associate($value);
-        });
+        return $value;
     }
 
-    public function formInputView($object)
+    public function formInputView(Model $object)
     {
         return parent::formInputView($object)
             ->with('ajaxSearchUrl', $this->relatedResource->makeUrl('api.getObjects'))
-            ->with('filterProviderFields', $this->relatedResource->newFilterProvider()->fields)
-            ;
+            ->with('filterProvider', $this->relatedResource->newFilterProvider());
     }
 
-    public function resolve($object)
+    public function resolve(Model $object)
     {
         return optional($object->{$this->name})->getKey();
     }
 
+    public function fill(Model $object, $value): void
+    {
+        /** @var \Illuminate\Database\Eloquent\Relations\BelongsTo $relation */
+        $relation = $object->{$this->name}();
+
+        // fixme: check value is available id
+        $relation->associate($value);
+    }
+
     public function getAllowClear(): bool
     {
-        return ! $this->disabled && !in_array('required', $this->creationRules, true); // fixme: can also updateRules
+        return !$this->disabled && !in_array('required', $this->creationRules, true); // fixme: can also updateRules
     }
 }

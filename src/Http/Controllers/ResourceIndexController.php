@@ -25,7 +25,7 @@ class ResourceIndexController
         );
 
         // Paginate results
-        $paginator = new Paginator($query, $resource->perPage, '', $filterProvider->query());
+        $paginator = new Paginator($query, $resource->perPage, '', $filterProvider->getValues());
 
         return view('admin::resource.index', compact(
             'resource',

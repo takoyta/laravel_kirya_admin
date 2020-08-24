@@ -24,7 +24,7 @@ class Panel extends Element
         return view('admin::resource.detail-partials.panel', compact('panel', 'object'));
     }
 
-    public function displayForm($object)
+    public function displayForm(Model $object)
     {
         $panel = $this;
 

@@ -2,13 +2,14 @@
 
 namespace KiryaDev\Admin\Traits;
 
-
-use KiryaDev\Admin\Fields\Panel;
-use KiryaDev\Admin\Fields\Element;
-use KiryaDev\Admin\Fields\HasMany;
-use KiryaDev\Admin\Fields\MorphMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use KiryaDev\Admin\Fields\BelongsTo;
+use KiryaDev\Admin\Fields\Element;
 use KiryaDev\Admin\Fields\FieldElement;
+use KiryaDev\Admin\Fields\HasMany;
+use KiryaDev\Admin\Fields\Panel;
 
 trait HasFields
 {
@@ -17,17 +18,14 @@ trait HasFields
      *
      * @return array
      */
-    public function fields()
+    public function fields(): array
     {
         return [
             // override there your fields and panels
         ];
     }
 
-    /**
-     * @return array
-     */
-    private function getFieldsOnce()
+    private function getFieldsOnce(): array
     {
         static $fields = [];
 
@@ -38,10 +36,7 @@ trait HasFields
         return $fields[static::class];
     }
 
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    public function getIndexFields()
+    public function getIndexFields(): Collection
     {
         return collect($this->getFieldsOnce())
             ->whereInstanceOf(FieldElement::class)
@@ -52,14 +47,15 @@ trait HasFields
      * @param  \Closure  $filter
      * @return \KiryaDev\Admin\Fields\Panel[]
      */
-    protected function getPanelsWithFilter($filter)
+    protected function getPanelsWithFilter(\Closure $filter)
     {
         $panels = [];
         $detailFields = [];
 
         foreach ($this->getFieldsOnce() as $field) {
-            if ($field instanceof FieldElement && $filter($field))
+            if ($field instanceof FieldElement && $filter($field)) {
                 $detailFields[] = $field;
+            }
 
             if ($field instanceof Panel) {
                 // fixme: hide panel with empty fields, but show inherited panel
@@ -80,9 +76,7 @@ trait HasFields
      */
     public function getDetailPanels()
     {
-        return $this->getPanelsWithFilter(function (Element $element) {
-            return $element->showOnDetail;
-        });
+        return $this->getPanelsWithFilter(fn (Element $element) => $element->showOnDetail);
     }
 
     /**
@@ -92,9 +86,9 @@ trait HasFields
      * @param  \Illuminate\Database\Eloquent\Model  $object
      * @return \KiryaDev\Admin\Fields\Panel[]
      */
-    public function getFormPanels($object)
+    public function getFormPanels(Model $object)
     {
-        return $this->getPanelsWithFilter(function (Element $element) use ($object) {
+        return $this->getPanelsWithFilter(static function (Element $element) use ($object) {
             if ($element instanceof FieldElement) {
                 if ($element->computed) {
                     return false;
@@ -124,10 +118,10 @@ trait HasFields
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return \Illuminate\Support\Collection
+     * @param Model $object
+     * @return Collection|FieldElement[]
      */
-    public function collapseFieldsFromPanels($object)
+    public function getFormFields(Model $object): Collection
     {
         return collect($this->getFormPanels($object))
             ->pluck('fields')
@@ -135,12 +129,7 @@ trait HasFields
             ->whereStrict('disabled', false);
     }
 
-    /**
-     * @param  \Illuminate\Http\Request             $request
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return array
-     */
-    public function validateOnFields($request, $object)
+    public function validateOnFields(Request $request, Model $object): array
     {
         return $request->validate(
             $this->validationRules($object),
@@ -149,17 +138,13 @@ trait HasFields
         );
     }
 
-    /**
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return array
-     */
-    protected function validationRules($object)
+    protected function validationRules(Model $object): array
     {
-        $fields = $this->collapseFieldsFromPanels($object);
+        $fields = $this->getFormFields($object);
 
         if ($object->exists && ($id = $object->getKey())) {
             return $fields
-                ->pluck('updateRules', 'name')->map(function ($rule) use ($id) {
+                ->pluck('updateRules', 'name')->map(static function ($rule) use ($id) {
                     return str_replace('{id}', $id, $rule);
                 })
                 ->all();
@@ -168,26 +153,15 @@ trait HasFields
         return $fields->pluck('creationRules', 'name')->all();
     }
 
-    /**
-     * @param  \Illuminate\Database\Eloquent\Model  $object
-     * @return array
-     */
-    protected function validationAttributes($object)
+    protected function validationAttributes(Model $object): array
     {
         return $this
-            ->collapseFieldsFromPanels($object)
+            ->getFormFields($object)
             ->pluck('title', 'name')
             ->all();
     }
 
-    /**
-     * Resolves field.
-     *
-     * @param  string  $className
-     * @param  string  $name
-     * @return mixed
-     */
-    public function resolveField($className, $name)
+    public function resolveField(string $className, string $name)
     {
         foreach ($this->getFieldsOnce() as $field) {
             if (! $field instanceof $className) {

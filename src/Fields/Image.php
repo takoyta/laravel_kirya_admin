@@ -2,22 +2,19 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
 
 class Image extends File
 {
-    public $accept = 'image/*';
+    public string $accept = 'image/*';
 
-    public $prefix = 'storage/images';
+    public string $prefix = 'storage/images';
 
-
-    protected function boot()
+    protected function boot(): void
     {
         parent::boot();
 
-        $this->displayUsing(function ($value) {
+        $this->displayUsing(static function (Model $object, $value) {
             return "<img src='{$value}' style='max-width: 100px'></img>";
         });
     }

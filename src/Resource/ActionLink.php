@@ -13,7 +13,7 @@ class ActionLink
     protected AbstractResource $resource;
     protected bool $asLink = false;
 
-    /** FontAwesome icon  */
+    /** FontAwesome icon */
     protected ?string $icon = null;
 
     /** CSS classes */
@@ -30,13 +30,9 @@ class ActionLink
         $this->altTitle = $title ?? $this->resource->actionLabel(ucfirst($this->ability));
     }
 
-    /**
-     * @param null|mixed $object
-     * @return null|string
-     */
-    public function display($object = null)
+    public function display(Model $object = null): string
     {
-        if ($object instanceof Model) {
+        if (null !== $object) {
             $this->param($this->objectKey, $object->getKey());
         }
 

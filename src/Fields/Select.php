@@ -2,17 +2,18 @@
 
 namespace KiryaDev\Admin\Fields;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Select extends FieldElement
 {
-    protected $options = [];
+    protected iterable $options = [];
 
-    protected $addNullOption = false;
+    protected bool $addNullOption = false;
 
-
-    protected function boot()
+    protected function boot(): void
     {
-        $this->displayUsing(function ($value) {
+        $this->displayUsing(function (Model $object, $value) {
             return $this->options[$value] ?? $value;
         });
     }
@@ -36,11 +37,11 @@ class Select extends FieldElement
         return $this;
     }
 
-    public function formInputView($object)
+    public function formInputView(Model $object)
     {
         $options = \is_callable($fn = $this->options) ? $fn($object) : $this->options;
 
-        if ($options instanceof \Illuminate\Support\Collection) {
+        if ($options instanceof Collection) {
             $options = $options->all();
         }
 

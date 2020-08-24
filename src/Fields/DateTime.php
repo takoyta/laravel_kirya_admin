@@ -2,37 +2,29 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class DateTime extends FieldElement
 {
-    public $format = 'Y-m-d H:i'; // using by rule
+    public string $format = 'Y-m-d H:i'; // using by rule
 
-    public $timepicker = true;
+    public bool $timepicker = true;
 
-
-    protected function boot()
+    protected function boot(): void
     {
-        $this
-            ->displayUsing(function (Carbon $date) {
-                return $date->format($this->format);
-            })
-
-            ->resolveUsing($this->displayCallback)
-
-            ->fillUsing(function ($object, $value) {
-                $object->{$this->name} = $value ? Carbon::parse($value) : null;
-            })
-
-            ->rules(new Validation\DateTimeRule($this))
-        ;
+        $this->rules(new Validation\DateTimeRule($this));
     }
 
-    public function format($fomat)
+    public function format(string $format)
     {
-        $this->format = $fomat;
+        $this->format = $format;
 
         return $this;
+    }
+
+    public function fill(Model $object, $value): void
+    {
+        parent::fill($object, $value ? Carbon::createFromFormat($this->format, $value) : null);
     }
 }

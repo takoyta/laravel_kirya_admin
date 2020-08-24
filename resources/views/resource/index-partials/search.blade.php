@@ -3,7 +3,7 @@
 
 
 <div class="d-flex">
-    {!! $filterProvider->searchField->formInputView($filterProvider) !!}
+    {!! $filterProvider->searchField->formInputView($filterProvider->virtualModel) !!}
 
     <div class="pr-1"></div>
 

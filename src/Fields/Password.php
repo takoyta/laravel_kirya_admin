@@ -2,18 +2,19 @@
 
 namespace KiryaDev\Admin\Fields;
 
+use Illuminate\Database\Eloquent\Model;
 
 class Password extends FieldElement
 {
-    protected function boot()
+    protected function boot(): void
     {
         $this->hideFromIndex()->hideFromDetail();
 
-        $this->resolveUsing(function () {
+        $this->resolveUsing(static function () {
             return null;
         });
 
-        $this->fillUsing(function ($object, $value) {
+        $this->fillUsing(function (Model $object, $value) {
             if ($value) {
                 $object->{$this->name} = bcrypt($value);
             }

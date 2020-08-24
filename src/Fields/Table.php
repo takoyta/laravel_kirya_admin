@@ -3,6 +3,8 @@
 namespace KiryaDev\Admin\Fields;
 
 
+use Illuminate\Database\Eloquent\Model;
+
 class Table extends Panel
 {
     private array $titles = [];
@@ -61,7 +63,7 @@ class Table extends Panel
         ]);
     }
 
-    public function displayForm($object)
+    public function displayForm(Model $object)
     {
         // fixme : no need display this of forms
         return null;

@@ -2,6 +2,7 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use KiryaDev\Admin\AdminCore;
 
@@ -16,6 +17,9 @@ trait HasConfirmation
     {
         $previousUrl = AdminCore::getPreviousUrl();
 
-        return view('admin::resource.confirm-action', compact('title', 'resource', 'panels', 'previousUrl'));
+        $virtualModel = new class extends Model {
+        };
+
+        return view('admin::resource.confirm-action', compact('title', 'resource', 'panels', 'previousUrl', 'virtualModel'));
     }
 }
