@@ -2,12 +2,11 @@
 
 namespace KiryaDev\Admin;
 
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 final class AdminAsset
 {
-    private const CACHE_DIR = 'admin-asset-cache';
+    private const STATIC_DIR = 'static-cache';
     private const CSS_URL_PATTERN = <<<REGEXP
 /url\((?!['"]?(?:data|http):)['"]?([^'"\)]*)['"]?\)/
 REGEXP;
@@ -65,32 +64,40 @@ REGEXP;
 
     public function cleanCache(): void
     {
-        $this->getStorage()->deleteDirectory(self::CACHE_DIR);
+        app('files')->deleteDirectory(public_path(self::STATIC_DIR));
     }
 
-    private function resolveAsset(string $path, string $filename = null, bool $isStyles = false): string
+    private function resolveAsset(string $sourcePath, string $filename = null, bool $isStyles = false): string
     {
-        $cachePath = self::CACHE_DIR . '/' . substr(md5($path), 0, 6) . '_' . ($filename ?? $this->resolveFilename($path));
+        $publicPath = '/' . self::STATIC_DIR . '/' . substr(md5($sourcePath), 0, 6) . '_' . ($filename ?? $this->resolveFilename($sourcePath));
+        $destPath = public_path($publicPath);
 
-        $storage = $this->getStorage();
-        if (!$storage->exists($cachePath)) {
-            $content = $this->fetchAsset($path);
+        if (! file_exists($destPath)) {
+            $this->retrieveFile($sourcePath, $destPath, $isStyles);
+        }
+
+        return $publicPath;
+    }
+
+    private function retrieveFile(string $sourcePath, string $destPath, bool $isStyles): void
+    {
+        if ($this->isLocalStored($sourcePath)) {
+            app('files')->link($sourcePath, $destPath);
+            return;
+        }
+
+        if ($this->isUrl($sourcePath)) {
+            $content = (string) file_get_contents($sourcePath, false, $this->getStreamContextWithBrowserUserAgent());
             if ($isStyles) {
-                $content = $this->postProcessStyles($content, $path);
+                $content = $this->postProcessStyles($content, $sourcePath);
             }
-            $storage->put($cachePath, $content);
+
+            app('files')->ensureDirectoryExists(dirname($destPath));
+            app('files')->put($destPath, $content);
+            return;
         }
 
-        return '/storage/' . $cachePath;
-    }
-
-    private function fetchAsset(string $path): string
-    {
-        if ($this->isUrl($path)) {
-            return (string)file_get_contents($path, false, $this->getStreamContextWithBrowserUserAgent());
-        }
-
-        return (string)file_get_contents($path);
+        throw new \RuntimeException('Unresolved static: ' . $sourcePath);
     }
 
     private function postProcessStyles(string $content, string $currentPath): string
@@ -108,11 +115,6 @@ REGEXP;
         }, $content);
     }
 
-    private function getStorage()
-    {
-        return Storage::disk('public');
-    }
-
     private function getStreamContextWithBrowserUserAgent()
     {
         // Google fonts not response correct font file for default header
@@ -122,6 +124,11 @@ REGEXP;
         ];
 
         return stream_context_create(compact('http'));
+    }
+
+    private function isLocalStored(string $path): bool
+    {
+        return strpos($path, '/') === 0 && file_exists($path);
     }
 
     private function isUrl(string $path): bool
