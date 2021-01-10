@@ -48,7 +48,7 @@ final class AdminCore
     {
         return collect(self::$resources)
             ->filter(static function (AbstractResource $resource) {
-                return $resource->orderInSidebar !== false && $resource->authorizedToViewAny();
+                return $resource->showInSidebar && $resource->authorizedToViewAny();
             })
             ->map(static function (AbstractResource $resource, $uriKey) {
                 return [

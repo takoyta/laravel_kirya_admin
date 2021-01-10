@@ -28,7 +28,9 @@ abstract class AbstractResource
 
     public int $perPage = 15;
 
-    public int $orderInSidebar = 100; // If false - resource hiding from sidebar
+    public bool $showInSidebar = true;
+
+    public int $orderInSidebar = 100;
 
     /**
      * @return Builder
