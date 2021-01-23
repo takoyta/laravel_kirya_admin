@@ -1,7 +1,7 @@
 @extends('admin::layouts.app')
 
 
-@section('title', __($resource->label()) . ' ' . $resource->title($object))
+@section('title', $resource->labeledTitle($object))
 
 
 @section('after-title')

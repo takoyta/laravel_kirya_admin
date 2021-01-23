@@ -14,10 +14,9 @@ class ResourceDeleteController
     {
         $object = $request->object();
         $resource = $request->resource();
-        $objectTitle = $resource->title($object);
 
-        if (!$this->isConfirmed($request)) {
-            return $this->renderConfirm($resource->actionLabel('Delete') . ' ' . $objectTitle, $resource);
+        if (! $this->isConfirmed($request)) {
+            return $this->renderConfirm($resource->actionLabel('Delete') . ' ' . $resource->title($object), $resource);
         }
 
         try {
@@ -35,6 +34,6 @@ class ResourceDeleteController
         }
 
         return redirect($resource->makeUrl('list'))
-            ->with('success', __('Resource :title deleted!', ['title' => $objectTitle]));
+            ->with('success', __(':title deleted!', ['title' => $resource->labeledTitle($object)]));
     }
 }

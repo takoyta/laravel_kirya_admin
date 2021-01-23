@@ -84,9 +84,9 @@ abstract class AbstractResource
     }
 
     /**
-     * Get title of object via title field.
+     * Get title of object.
      *
-     * @param Model|string $object
+     * @param Model|string|int $object
      * @return string
      */
     public function title($object): string
@@ -100,6 +100,17 @@ abstract class AbstractResource
         }
 
         return (string)$object->{$this->title};
+    }
+
+    /**
+     * Get title of object with resource name.
+     *
+     * @param Model|string|int $object
+     * @return string
+     */
+    public function labeledTitle($object): string
+    {
+        return __(static::label()) . ' ' . $this->title($object);
     }
 
     /**

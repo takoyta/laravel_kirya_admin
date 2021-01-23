@@ -22,7 +22,7 @@ class MorphTo extends FieldElement
 
         $resource = $this->resolveResourceByObject($relatedObject);
 
-        $title = __($resource::label()) . ': ' . $resource->title($relatedObject);
+        $title = $resource->labeledTitle($relatedObject);
 
         $value = $resource
             ->makeActionLink('detail', 'view', $title)

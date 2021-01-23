@@ -57,7 +57,7 @@ trait HandlesForm
     {
         return redirect($resource
             ->makeUrl('detail', ['id' => $object->getKey()]))
-            ->with('success', __($object->wasRecentlyCreated ? 'Resource :title created!' : 'Resource :title updated!', ['title' => $resource->title($object)]));
+            ->with('success', __($object->wasRecentlyCreated ? ':title created!' : ':title updated!', ['title' => $resource->labeledTitle($object)]));
     }
 
     protected function render(AbstractResource $resource, Model $object)
