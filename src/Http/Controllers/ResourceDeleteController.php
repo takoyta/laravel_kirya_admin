@@ -8,7 +8,7 @@ use KiryaDev\Admin\Http\Requests\DeleteResourceRequest;
 
 class ResourceDeleteController
 {
-    use HasConfirmation;
+    use Traits\ConfirmsAction;
 
     public function handle(DeleteResourceRequest $request)
     {

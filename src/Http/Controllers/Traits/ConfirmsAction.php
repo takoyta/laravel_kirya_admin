@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace KiryaDev\Admin\Http\Controllers;
+namespace KiryaDev\Admin\Http\Controllers\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use KiryaDev\Admin\AdminCore;
 
-trait HasConfirmation
+trait ConfirmsAction
 {
     protected function isConfirmed(Request $request): bool
     {

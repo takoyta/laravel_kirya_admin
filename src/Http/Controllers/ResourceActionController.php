@@ -8,7 +8,7 @@ use KiryaDev\Admin\Http\Requests\ActionResourceRequest;
 
 class ResourceActionController
 {
-    use HasConfirmation;
+    use Traits\ConfirmsAction;
 
     /**
      * @param ActionResourceRequest $request
