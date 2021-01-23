@@ -3,12 +3,11 @@
 namespace KiryaDev\Admin\Http\Controllers;
 
 use KiryaDev\Admin\Fields\MorphTo;
-use KiryaDev\Admin\Traits\HandlesForm;
 use KiryaDev\Admin\Http\Requests\AddRelatedResourceRequest;
 
 class AddRelatedController
 {
-    use HandlesForm;
+    use Traits\HandlesForm;
 
     public function handle(AddRelatedResourceRequest $request)
     {
