@@ -2,37 +2,24 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
-use KiryaDev\Admin\Resource\Paginator;
+use KiryaDev\Admin\Fields\ActionsField;
+use KiryaDev\Admin\Http\Controllers\Traits\ViewingObjects;
 use KiryaDev\Admin\Http\Requests\IndexResourceRequest;
 
 class ResourceIndexController
 {
+    use ViewingObjects;
+
     public function handle(IndexResourceRequest $request)
     {
         $resource = $request->resource();
 
-        $actions = $resource
-            ->getActionLinksForHandleMany()
-            ->add($resource->makeActionLink('create'));
-
-        $fields = $resource
-            ->getIndexFields()
-            ->add($resource->getIndexActionsField());
-
-        // Search & Filter
-        $filterProvider = $resource->newFilterProvider()->apply(
-            $query = $resource->indexQuery()
+        return $this->viewObjects(
+            $resource,
+            $resource->indexQuery(),
+            __($resource->pluralLabel()),
+            fn($commonActions) => $commonActions[] = $resource->makeActionLink('create'),
+            fn($singleActions) => null,
         );
-
-        // Paginate results
-        $paginator = new Paginator($query, $resource->perPage, '', $filterProvider->getValues());
-
-        return view('admin::resource.index', compact(
-            'resource',
-            'actions',
-            'fields',
-            'filterProvider',
-            'paginator'
-        ));
     }
 }

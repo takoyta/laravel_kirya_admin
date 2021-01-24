@@ -2,17 +2,12 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use KiryaDev\Admin\Http\Requests\IndexResourceRequest;
 
 class ApiController
 {
-    /**
-     * Read docs here https://select2.org/data-sources/formats
-     *
-     * @param IndexResourceRequest $request
-     * @return JsonResponse
-     */
     public function getObjects(IndexResourceRequest $request): JsonResponse
     {
         $resource = $request->resource();
@@ -23,9 +18,13 @@ class ApiController
 
         $paginator = $query->paginate(15);
 
+        /** Build response for Select2. Read the docs here https://select2.org/data-sources/formats */
         $results = $paginator
-            ->map(static function ($object) use ($resource) {
-                return ['id' => $object->getKey(), 'text' => $resource->title($object)];
+            ->map(static function (Model $object) use ($resource) {
+                return [
+                    'id' => $object->getKey(),
+                    'text' => $resource->title($object),
+                ];
             });
 
         $pagination = ['more' => $paginator->hasMorePages()];

@@ -27,7 +27,7 @@ Route::match(['get', 'post'], 'resource/{resource}/action/{action}', 'ResourceAc
 // Relations
 Route::match(['get', 'post'], 'resource/{resource}/{id}/add/{related_resource}', 'AddRelatedController@handle')->name('addRelated');
 
-Route::match(['get', 'post'], 'api/resource/{resource}/{id}/attach/{related_resource}', 'AttachRelatedController@attach')->name('attachRelated');
+Route::get('resource/{resource}/{id}/attach/{related_resource}', 'AttachRelatedController@attach')->name('attachRelated');
 Route::get('resource/{resource}/{id}/detach/{related_resource}/{related_id}', 'AttachRelatedController@detach')->name('detachRelated');
 
 Route::get('api/resource/{resource}/get-objects', 'ApiController@getObjects')->name('api.getObjects');

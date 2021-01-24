@@ -17,9 +17,8 @@ class BelongsToMany extends HasMany
             ->getActionLinksForHandleMany($abilitySuffix, ['resource' => $this->relatedResource->uriKey(), 'from' => $resource->uriKey(), 'relation' => $this->name])
             ->add(
                 $resource
-                    ->makeActionLink('attachRelated', 'attach' . $abilitySuffix, $attachTitle)
+                    ->makeActionLink('attachRelated', 'attachAny' . $abilitySuffix, $attachTitle)
                     ->param('related_resource', $this->relatedResource->uriKey())
-                    ->addClass('js-attach-related')
             );
 
         return $this->wrapActions($actions, $object);
@@ -43,7 +42,7 @@ class BelongsToMany extends HasMany
                     ->param('id', $object->getKey())
                     ->param('related_resource', $this->relatedResource->uriKey())
                     ->displayAsLink()
-                    ->icon('thumbtack')
+                    ->icon('thumbtack text-danger')
                 )
             );
     }

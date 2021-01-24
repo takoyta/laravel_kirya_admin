@@ -1,6 +1,6 @@
 @extends('admin::layouts.app')
 
-@section('title', __($resource->pluralLabel()))
+@section('title', $pageTitle)
 
 
 @section('content')

@@ -2,36 +2,19 @@
 
 namespace KiryaDev\Admin\Http\Requests;
 
-use KiryaDev\Admin\AdminCore;
-use KiryaDev\Admin\Fields\BelongsToMany;
-use KiryaDev\Admin\Resource\AbstractResource;
+use KiryaDev\Admin\Fields;
 
-/**
- * @property-read string $id
- * @property-read string $related_resource
- * @property-read string $related_id
- */
-class AttachRelatedResourceRequest extends ResourceRequest
+class AttachRelatedResourceRequest extends AbstractRelatedResourceRequest
 {
-    public function resource(): AbstractResource
+    public function authorizeAbilityPrefix(): string
     {
-        return AdminCore::resourceByKey($this->related_resource);
+        return 'attachAny';
     }
 
-    public function parentResource(): AbstractResource
-    {
-        return AdminCore::resourceByKey($this->resource);
-    }
-
-    public function parentObject()
-    {
-        return $this->parentResource()->findModel($this->id);
-    }
-
-    public function resolveParentField(): BelongsToMany
+    public function resolveParentField(): Fields\BelongsToMany
     {
         return $this
             ->parentResource()
-            ->resolveField(BelongsToMany::class, $this->related_resource);
+            ->resolveField(Fields\BelongsToMany::class, $this->related_resource);
     }
 }
