@@ -61,7 +61,7 @@ class HasMany extends Panel
             ->getActionLinksForHandleMany($abilitySuffix, ['resource' => $this->relatedResource->uriKey(), 'from' => $resource->uriKey(), 'relation' => $this->name])
             ->add(
                 $resource
-                    ->makeActionLink('addRelated', 'add' . $abilitySuffix, $addTitle)
+                    ->makeActionLink('addRelated', 'addAny' . $abilitySuffix, $addTitle)
                     ->param('related_resource', $this->relatedResource->uriKey())
             );
 

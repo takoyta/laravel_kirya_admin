@@ -3,10 +3,7 @@
 namespace KiryaDev\Admin\Http\Requests;
 
 use KiryaDev\Admin\AdminCore;
-use KiryaDev\Admin\Fields\BelongsTo;
-use KiryaDev\Admin\Fields\HasMany;
-use KiryaDev\Admin\Fields\MorphMany;
-use KiryaDev\Admin\Fields\MorphTo;
+use KiryaDev\Admin\Fields;
 use KiryaDev\Admin\Resource\AbstractResource;
 
 /**
@@ -14,37 +11,34 @@ use KiryaDev\Admin\Resource\AbstractResource;
  * @property-read string $resource
  * @property-read string $related_resource
  */
-class AddRelatedResourceRequest extends CreateResourceRequest
+class AddRelatedResourceRequest extends AbstractRelatedResourceRequest
 {
-    public function authorize(): bool
+    public function authorizeAbilityPrefix(): string
+    {
+        return 'addAny';
+    }
+
+    public function resolveParentField(): Fields\HasMany
     {
         return $this
-            ->resource()
-            ->authorizedTo(
-                'add' . $this->relatedResource()->modelName(),
-                $this->resource()->findModel($this->id)
-            );
+            ->parentResource()
+            ->resolveField(Fields\HasMany::class, $this->related_resource);
     }
 
-    public function relatedResource(): AbstractResource
+    public function resolveRelatedField(): Fields\BelongsTo
     {
-        return AdminCore::resourceByKey($this->related_resource);
-    }
+        $parentField = $this->resolveParentField();
 
-    public function resolveRelatedField(): BelongsTo
-    {
-        $parentField = $this->resource()->resolveField(HasMany::class, $this->related_resource);
-
-        if ($parentField instanceof MorphMany) {
+        if ($parentField instanceof Fields\MorphMany) {
             return $this
-                ->relatedResource()
-                ->resolveField(MorphTo::class, $parentField->reverseName);
+                ->resource()
+                ->resolveField(Fields\MorphTo::class, $parentField->reverseName);
         }
 
-        if ($parentField instanceof HasMany) {
+        if ($parentField instanceof Fields\HasMany) {
             return $this
-                ->relatedResource()
-                ->resolveField(BelongsTo::class, $this->resource);
+                ->resource()
+                ->resolveField(Fields\BelongsTo::class, $this->resource);
         }
 
         throw new \RuntimeException(sprintf('Unknown related type %s.', get_class($parentField)));

@@ -11,7 +11,7 @@ class AddRelatedController
 
     public function handle(AddRelatedResourceRequest $request)
     {
-        $resource = $request->relatedResource();
+        $resource = $request->resource();
 
         $object = $resource->newModel();
 

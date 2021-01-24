@@ -29,7 +29,7 @@ class BelongsToMany extends HasMany
     {
         $detachTitle = $this->relatedResource->actionLabel('Detach');
 
-        $ability = 'detach'.$this->relatedResource->modelName();
+        $ability = 'detach' . $this->relatedResource->modelName();
 
         return $this
             ->relatedResource
@@ -37,6 +37,7 @@ class BelongsToMany extends HasMany
             ->add($this->relatedResource
                 ->getIndexActionsField()
                 ->add($resource
+                    // TODO: add parent object to check ability
                     ->makeActionLink('detachRelated', $ability, $detachTitle)
                     ->objectKey('related_id')
                     ->param('id', $object->getKey())
