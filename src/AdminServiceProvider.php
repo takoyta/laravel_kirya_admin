@@ -2,6 +2,7 @@
 
 namespace KiryaDev\Admin;
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -31,6 +32,8 @@ class AdminServiceProvider extends BaseServiceProvider
         $this->registerResourceRoutes();
 
         $this->registerViews();
+
+        $this->useBootsrapInPaginator();
     }
 
     protected function registerPublishers(): void
@@ -71,5 +74,10 @@ class AdminServiceProvider extends BaseServiceProvider
     protected function registerViews(): void
     {
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'admin');
+    }
+
+    protected function useBootsrapInPaginator(): void
+    {
+        Paginator::useBootstrap();
     }
 }
