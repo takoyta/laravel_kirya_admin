@@ -13,7 +13,7 @@ class MorphTo extends FieldElement
      */
     protected array $modelToResourceMap;
 
-    public function display(Model $object)
+    public function displayValue(Model $object)
     {
         $relatedObject = $object->{$this->name};
         if (null === $relatedObject) {

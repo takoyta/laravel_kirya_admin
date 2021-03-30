@@ -10,9 +10,13 @@ use KiryaDev\Admin\Fields\Element;
 use KiryaDev\Admin\Fields\FieldElement;
 use KiryaDev\Admin\Fields\HasMany;
 use KiryaDev\Admin\Fields\Panel;
+use KiryaDev\Admin\Fields\Panelable;
+use KiryaDev\Admin\Resource\AbstractResource;
 
 trait HasFields
 {
+    private static array $fieldsCache = [];
+
     /**
      * Call getFieldsOnce for get once instances.
      *
@@ -27,13 +31,33 @@ trait HasFields
 
     private function getFieldsOnce(): array
     {
-        static $fields = [];
-
-        if (! isset($fields[static::class])) {
-            $fields[static::class] = $this->fields();
+        if (! isset(static::$fieldsCache[static::class])) {
+            static::$fieldsCache[static::class] = $this->validateFields();
         }
 
-        return $fields[static::class];
+        return static::$fieldsCache[static::class];
+    }
+
+    private function validateFields(): array
+    {
+        $fields = array_filter($this->fields(), 'is_object');
+
+        foreach ($fields as $field) {
+            if ($field instanceof Element) {
+                if ($this instanceof AbstractResource) {
+                    $field->setResource($this);
+                }
+                continue;
+            }
+
+            throw new \RuntimeException(sprintf(
+                'Invalid field type: %s. Must extends %s',
+                is_object($field) ? get_class($field) : gettype($field),
+                Element::class,
+            ));
+        }
+
+        return $fields;
     }
 
     public function getIndexFields(): Collection
@@ -53,15 +77,34 @@ trait HasFields
         $detailFields = [];
 
         foreach ($this->getFieldsOnce() as $field) {
-            if ($field instanceof FieldElement && $filter($field)) {
-                $detailFields[] = $field;
+            if (! $filter($field)) {
+                continue;
             }
 
-            if ($field instanceof Panel) {
-                // fixme: hide panel with empty fields, but show inherited panel
-                $field->fields = array_filter($field->fields, $filter);
-                $panels[] = $field;
+            if ($field instanceof FieldElement) {
+                $detailFields[] = $field;
+                continue;
             }
+
+            if ($field instanceof Panelable) {
+                if ($field instanceof Panel) {
+                    $field->fields = array_filter($field->fields, $filter);
+                    if (count($field->fields) === 0) {
+                        continue;
+                    }
+                }
+
+                if ($field instanceof HasMany) {
+                    if (! $field->relatedResource->authorizedToViewAny()) {
+                        continue;
+                    }
+                }
+
+                $panels[] = $field;
+                continue;
+            }
+
+            throw new \InvalidArgumentException('Field must extends FieldElement or implemenets Panelable');
         }
 
         if ($detailFields) {

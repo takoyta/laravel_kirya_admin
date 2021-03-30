@@ -2,7 +2,6 @@
 
 namespace KiryaDev\Admin\Http\Controllers;
 
-use KiryaDev\Admin\Fields\ActionsField;
 use KiryaDev\Admin\Http\Controllers\Traits\ViewingObjects;
 use KiryaDev\Admin\Http\Requests\IndexResourceRequest;
 

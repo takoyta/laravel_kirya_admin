@@ -31,7 +31,7 @@ class ActionsField
         return $this;
     }
 
-    public function display($object)
+    public function displayValue($object)
     {
         return collect($this->actions)->map->display($object)->implode(' ');
     }

@@ -2,10 +2,9 @@
 
 namespace KiryaDev\Admin\Fields;
 
-
 use Illuminate\Database\Eloquent\Model;
 
-class Table extends Panel
+class Table extends Element implements Panelable
 {
     private array $titles = [];
     public array $classes = [];
@@ -44,7 +43,7 @@ class Table extends Panel
         return $this;
     }
 
-    public function display($resource, $object)
+    public function displayValue(Model $object)
     {
         $tableBody = is_callable($this->dataProvider)
             ? ($this->dataProvider)($object)
@@ -61,11 +60,5 @@ class Table extends Panel
             'tableClasses' => $this->classes,
             'noData' => $this->noData,
         ]);
-    }
-
-    public function displayForm(Model $object)
-    {
-        // fixme : no need display this of forms
-        return null;
     }
 }

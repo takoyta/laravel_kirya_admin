@@ -72,7 +72,7 @@
 
                     @foreach($fields as $field)
                         <td>
-                            {!! $field->display($object) !!}
+                            {!! $field->displayValue($object) !!}
                         </td>
                     @endforeach
 

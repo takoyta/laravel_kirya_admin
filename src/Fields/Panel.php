@@ -5,19 +5,19 @@ namespace KiryaDev\Admin\Fields;
 use Illuminate\Database\Eloquent\Model;
 use KiryaDev\Admin\Resource\AbstractResource;
 
-class Panel extends Element
+class Panel extends Element implements Panelable
 {
-    public $fields;
+    public iterable $fields;
 
 
-    protected function __construct(string $title, $fields = [])
+    protected function __construct(string $title, iterable $fields = [])
     {
         parent::__construct($title);
 
         $this->fields = $fields;
     }
 
-    public function display(AbstractResource $resource, Model $object)
+    public function displayValue(Model $object)
     {
         $panel = $this;
 

@@ -8,7 +8,7 @@ use KiryaDev\Admin\Filters\FilterProvider;
 use KiryaDev\Admin\Resource\AbstractResource;
 use KiryaDev\Admin\Resource\Paginator;
 
-class HasMany extends Panel
+class HasMany extends Element implements Panelable
 {
     protected int $perPage = 5;
     public string $name;
@@ -16,17 +16,17 @@ class HasMany extends Panel
 
     protected function __construct($title, $name, $resource)
     {
-        parent::__construct($title, []);
+        parent::__construct($title);
 
         $this->name = $name;
         $this->relatedResource = $resource::instance();
     }
 
-    public function display(AbstractResource $resource, Model $object)
+    public function displayValue(Model $object)
     {
         $title = $this->title;
-
-        $fields = $this->fields($resource, $object);
+        $resource = $this->resource;
+        $fields = $this->fields($object);
 
         // For isolate filter if more than one filter on page.
         $prefix = $this->name . '_';
@@ -41,7 +41,7 @@ class HasMany extends Panel
             'filterProvider',
             'paginator'
         ))
-            ->with('actions', $this->actions($resource, $object));
+            ->with('actions', $this->actions($object));
     }
 
     private function getRelation(Model $object, FilterProvider $filter)
@@ -52,15 +52,19 @@ class HasMany extends Panel
         return $relation;
     }
 
-    protected function actions(AbstractResource $resource, Model $object): Collection
+    protected function actions(Model $object): Collection
     {
         $abilitySuffix = $this->relatedResource->modelName();
         $addTitle = $this->relatedResource->actionLabel('Add');
 
         $actions = $this->relatedResource
-            ->getActionLinksForHandleMany($abilitySuffix, ['resource' => $this->relatedResource->uriKey(), 'from' => $resource->uriKey(), 'relation' => $this->name])
+            ->getActionLinksForHandleMany($abilitySuffix, [
+                'resource' => $this->relatedResource->uriKey(),
+                'from' => $this->resource->uriKey(),
+                'relation' => $this->name,
+            ])
             ->add(
-                $resource
+                $this->resource
                     ->makeActionLink('addRelated', 'addAny' . $abilitySuffix, $addTitle)
                     ->param('related_resource', $this->relatedResource->uriKey())
             );
@@ -99,25 +103,18 @@ class HasMany extends Panel
      *  For MorphMany requires exclude MorphTo,
      *  For BelongsToMany requires add actions "Attach" & "Detach".
      *
-     * @param AbstractResource $resource
      * @param Model $object
      * @return Collection
      */
-    protected function fields(AbstractResource $resource, Model $object): Collection
+    protected function fields(Model $object): Collection
     {
         return $this
             ->relatedResource
             ->getIndexFields()
-            ->filter(static function ($field) use ($resource) {
-                return !($field instanceof BelongsTo && $field->relatedResource === $resource); //exclude reverse relation
+            ->filter(function ($field) {
+                return !($field instanceof BelongsTo && $field->relatedResource === $this->resource); //exclude reverse relation
             })
             ->add($this->relatedResource->getIndexActionsField());
-    }
-
-    public function displayForm(Model $object)
-    {
-        // fixme : no need display this of forms
-        return null;
     }
 
     /**

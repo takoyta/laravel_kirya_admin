@@ -91,7 +91,7 @@ abstract class FieldElement extends Element
         return $this;
     }
 
-    public function display(Model $object)
+    public function displayValue(Model $object)
     {
         if ($this->computed) {
             return ($this->name)($object);
@@ -105,7 +105,7 @@ abstract class FieldElement extends Element
         return $value;
     }
 
-    public function formInputView(Model $object)
+    public function displayForm(Model $object)
     {
         [$field, $value] = [$this, old($this->name, $this->resolve($object))];
 

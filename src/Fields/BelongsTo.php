@@ -16,7 +16,7 @@ class BelongsTo extends FieldElement
         $this->relatedResource = $resource::instance();
     }
 
-    public function display(Model $object)
+    public function displayValue(Model $object)
     {
         $relatedObject = $object->{$this->name};
         if (null === $relatedObject) {
@@ -38,9 +38,9 @@ class BelongsTo extends FieldElement
         return $value;
     }
 
-    public function formInputView(Model $object)
+    public function displayForm(Model $object)
     {
-        return parent::formInputView($object)
+        return parent::displayForm($object)
             ->with('ajaxSearchUrl', $this->relatedResource->makeUrl('api.getObjects'))
             ->with('filterProvider', $this->relatedResource->newFilterProvider());
     }

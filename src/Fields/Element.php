@@ -2,7 +2,9 @@
 
 namespace KiryaDev\Admin\Fields;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use KiryaDev\Admin\Resource\AbstractResource;
 
 abstract class Element
 {
@@ -14,6 +16,7 @@ abstract class Element
     public $showOnUpdate = true;
 
     protected $formView;
+    protected AbstractResource $resource;
 
 
     public static function make(...$name)
@@ -105,6 +108,33 @@ abstract class Element
         return $this;
     }
 
+    /**
+     * @internal
+     */
+    public function setResource(AbstractResource $resource): void
+    {
+        $this->resource = $resource;
+    }
+
+    /**
+     * @internal
+     */
+    public function displayValue(Model $object)
+    {
+        // There is some logic about field on index & detail
+    }
+
+    /**
+     * @internal
+     */
+    public function displayForm(Model $object)
+    {
+        // There is some logic about field on forms
+    }
+
+    /**
+     * @internal
+     */
     protected function resolveFormView()
     {
         if (null !== $this->formView) {

@@ -10,5 +10,5 @@
 
 
 @section('content')
-    @foreach($panels as $panel) {!! $panel->display($resource, $object) !!} @endforeach
+    @foreach($panels as $panel) {!! $panel->displayValue($object) !!} @endforeach
 @endsection

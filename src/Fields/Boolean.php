@@ -13,9 +13,9 @@ class Boolean extends FieldElement
         $this->rules('boolean');
     }
 
-    public function display(Model $object)
+    public function displayValue(Model $object)
     {
-        $value = parent::display($object);
+        $value = parent::displayValue($object);
 
         if (null !== $this->labelResolver && null !== $value) {
             $label = call_user_func($this->labelResolver, $object);

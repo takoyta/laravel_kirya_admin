@@ -9,7 +9,7 @@
                 </div>
 
                 <div class="col-md-8">
-                    {!! $field->display($object) !!}
+                    {!! $field->displayValue($object) !!}
                 </div>
             </div>
         </div>

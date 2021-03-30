@@ -9,7 +9,7 @@
                 </div>
 
                 <div class="col-md-8">
-                    {!! $field->formInputView($object) !!}
+                    {!! $field->displayForm($object) !!}
 
                     @if ($errors->has($field->name))
                         <div class="mt-1 js-form-error">

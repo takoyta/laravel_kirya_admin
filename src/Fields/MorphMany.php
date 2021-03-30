@@ -4,7 +4,6 @@ namespace KiryaDev\Admin\Fields;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use KiryaDev\Admin\Resource\AbstractResource;
 
 class MorphMany extends HasMany
 {
@@ -20,7 +19,7 @@ class MorphMany extends HasMany
         $this->reverseName = $name;
     }
 
-    protected function fields(AbstractResource $resource, Model $object): Collection
+    protected function fields(Model $object): Collection
     {
         return $this
             ->relatedResource

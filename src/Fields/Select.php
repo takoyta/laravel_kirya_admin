@@ -37,7 +37,7 @@ class Select extends FieldElement
         return $this;
     }
 
-    public function formInputView(Model $object)
+    public function displayForm(Model $object)
     {
         $options = \is_callable($fn = $this->options) ? $fn($object) : $this->options;
 
@@ -49,6 +49,6 @@ class Select extends FieldElement
             $options = [null => '—'] + $options;
         }
 
-        return parent::formInputView($object)->with(compact('options'));
+        return parent::displayForm($object)->with(compact('options'));
     }
 }
