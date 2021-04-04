@@ -4,27 +4,20 @@ namespace KiryaDev\Admin\Fields;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use KiryaDev\Admin\Resource\ActionLink;
 
 class BelongsToMany extends HasMany
 {
-    protected function actions(Model $object): Collection
+    protected bool $addAction = true; // in real attach action
+
+    protected function buildAddAction(): ActionLink
     {
-        $abilitySuffix = $this->relatedResource->modelName();
-        $attachTitle = $this->relatedResource->actionLabel('Attach');
+        $ability = 'attachAny' . $this->relatedResource->modelName();
+        $title = $this->relatedResource->actionLabel('Attach');
 
-        $actions = $this->relatedResource
-            ->getActionLinksForHandleMany($abilitySuffix, [
-                'resource' => $this->relatedResource->uriKey(),
-                'from' => $this->resource->uriKey(),
-                'relation' => $this->name,
-            ])
-            ->add(
-                $this->resource
-                    ->makeActionLink('attachRelated', 'attachAny' . $abilitySuffix, $attachTitle)
-                    ->param('related_resource', $this->relatedResource->uriKey())
-            );
-
-        return $this->wrapActions($actions, $object);
+        return $this->resource
+            ->makeActionLink('attachRelated', $ability, $title)
+            ->param('related_resource', $this->relatedResource->uriKey());
     }
 
     protected function fields(Model $object): Collection

@@ -6,13 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use KiryaDev\Admin\Filters\FilterProvider;
 use KiryaDev\Admin\Resource\AbstractResource;
+use KiryaDev\Admin\Resource\ActionLink;
 use KiryaDev\Admin\Resource\Paginator;
 
 class HasMany extends Element implements Panelable
 {
-    protected int $perPage = 5;
     public string $name;
     public AbstractResource $relatedResource;
+
+    protected int $perPage = 5;
+    protected bool $addAction = false;
+    protected bool $indexActions = false;
 
     protected function __construct($title, $name, $resource)
     {
@@ -52,24 +56,35 @@ class HasMany extends Element implements Panelable
         return $query;
     }
 
-    protected function actions(Model $object): Collection
+    final protected function actions(Model $object): Collection
     {
+        $actions = new Collection();
         $abilitySuffix = $this->relatedResource->modelName();
-        $addTitle = $this->relatedResource->actionLabel('Add');
 
-        $actions = $this->relatedResource
-            ->getActionLinksForHandleMany($abilitySuffix, [
-                'resource' => $this->relatedResource->uriKey(),
-                'from' => $this->resource->uriKey(),
-                'relation' => $this->name,
-            ])
-            ->add(
-                $this->resource
-                    ->makeActionLink('addRelated', 'addAny' . $abilitySuffix, $addTitle)
-                    ->param('related_resource', $this->relatedResource->uriKey())
-            );
+        if ($this->indexActions) {
+            $actions = $this->relatedResource
+                ->getActionLinksForHandleMany($abilitySuffix, [
+                    'resource' => $this->relatedResource->uriKey(),
+                    'from' => $this->resource->uriKey(),
+                    'relation' => $this->name,
+                ]);
+        }
+
+        if ($this->addAction) {
+            $actions->add($this->buildAddAction());
+        }
 
         return $this->wrapActions($actions, $object);
+    }
+
+    protected function buildAddAction(): ActionLink
+    {
+        $ability = 'addAny' . $this->relatedResource->modelName();
+        $title = $this->relatedResource->actionLabel('Add');
+
+        return $this->resource
+            ->makeActionLink('addRelated', $ability, $title)
+            ->param('related_resource', $this->relatedResource->uriKey());
     }
 
     /**
@@ -83,8 +98,8 @@ class HasMany extends Element implements Panelable
     {
         return $actions->map(function ($action) use ($object) {
             return tap(new class {
-                public $action;
-                public $object;
+                public ActionLink $action;
+                public Model $object;
 
                 public function display()
                 {
@@ -117,10 +132,20 @@ class HasMany extends Element implements Panelable
             ->add($this->relatedResource->getIndexActionsField());
     }
 
-    /**
-     * @param int $count
-     * @return static
-     */
+    public function withAddAction(bool $flag = true)
+    {
+        $this->addAction = $flag;
+
+        return $this;
+    }
+
+    public function withIndexActions(bool $flag = true)
+    {
+        $this->indexActions = $flag;
+
+        return $this;
+    }
+
     public function perPage(int $count)
     {
         $this->perPage = $count;
