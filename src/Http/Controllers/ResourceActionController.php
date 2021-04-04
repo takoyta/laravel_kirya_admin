@@ -48,7 +48,7 @@ class ResourceActionController
         }
 
         if ($request->from) {
-            $query = $resource->findModel($request->id)->{$request->relation}();
+            $query = $resource->findModel($request->id)->{$request->relation}()->getQuery();
             $resource = AdminCore::resourceByKey($request->resource);
 
             $resource->newFilterProvider($request->relation . '_')->apply($query);

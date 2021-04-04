@@ -31,7 +31,7 @@ class HasMany extends Element implements Panelable
         // For isolate filter if more than one filter on page.
         $prefix = $this->name . '_';
         $filterProvider = $this->relatedResource->newFilterProvider($prefix);
-        $paginator = new Paginator($this->getRelation($object, $filterProvider), $this->perPage, $prefix, $filterProvider->getValues());
+        $paginator = new Paginator($this->getRelationQuery($object, $filterProvider), $this->perPage, $prefix, $filterProvider->getValues());
 
         return view($this->resolveFormView(), compact(
             'resource',
@@ -44,12 +44,12 @@ class HasMany extends Element implements Panelable
             ->with('actions', $this->actions($object));
     }
 
-    private function getRelation(Model $object, FilterProvider $filter)
+    private function getRelationQuery(Model $object, FilterProvider $filter)
     {
-        $relation = $object->{$this->name}();
-        $filter->apply($relation);
+        $query = $object->{$this->name}()->getQuery();
+        $filter->apply($query);
 
-        return $relation;
+        return $query;
     }
 
     protected function actions(Model $object): Collection

@@ -12,11 +12,11 @@ class Search
     /**
      * Search models by many columns and through many tables.
      *
-     * @param  Builder|Relation  $query
-     * @param  string|array      $columns
-     * @param  string            $term
+     * @param  Builder       $query
+     * @param  string|array  $columns
+     * @param  string        $term
      */
-    public static function deepSearch($query, $columns, $term)
+    public static function deepSearch(Builder $query, $columns, $term)
     {
         static::treeIterator(
             static::buildSearchTree($columns),
@@ -42,12 +42,7 @@ class Search
         return $tree;
     }
 
-    /**
-     * @param  array             $node
-     * @param  Builder|Relation  $query
-     * @param  string            $term
-     */
-    private static function treeIterator($node, $query, $term)
+    private static function treeIterator(array $node, Builder $query, string $term)
     {
         $query->where(function (Builder $query) use ($node, $term) {
             foreach ($node as $column => $nestedNode) {

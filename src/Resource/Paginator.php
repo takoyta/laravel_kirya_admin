@@ -3,8 +3,6 @@
 namespace KiryaDev\Admin\Resource;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Database\Query\Builder as LaravelQueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use KiryaDev\Admin\Fields\FieldElement;
@@ -31,13 +29,8 @@ class Paginator
 
     /**
      * Paginator constructor.
-     *
-     * @param Relation|Builder $builder
-     * @param int $perPage
-     * @param string $prefix
-     * @param array $query
      */
-    public function __construct($builder, int $perPage, string $prefix = '', array $query = [])
+    public function __construct(Builder $builder, int $perPage, string $prefix = '', array $query = [])
     {
         $this->path = LengthAwarePaginator::resolveCurrentPath();
 
@@ -45,7 +38,7 @@ class Paginator
 
         $this->query = $query;
 
-        $qb = $this->getQueryBuilder($builder);
+        $qb = $builder->getQuery(); // There is gets Database\Query\Builder from Eloquent\Query\Builder
 
         $orders = request()->only([
             $this->prefixed('order'),
@@ -67,27 +60,6 @@ class Paginator
 
         $this->lengthAwarePaginator = $builder->paginate($perPage, ['*'], $this->prefixed('page'));
         $this->lengthAwarePaginator->appends($this->query + $orders);
-    }
-
-    /**
-     * Resolves Query Builder
-     *
-     * @param $builder
-     * @return LaravelQueryBuilder
-     */
-    private function getQueryBuilder($builder): LaravelQueryBuilder
-    {
-        if ($builder instanceof Relation) {
-            $builder = $builder->getQuery();
-        }
-
-        if ($builder instanceof Builder) {
-            return $builder->getQuery();
-        }
-
-        throw new \RuntimeException(
-            sprintf('Non query class %s.', get_class($builder))
-        );
     }
 
     /**

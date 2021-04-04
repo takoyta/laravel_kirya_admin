@@ -17,10 +17,10 @@ class FilterProvider
 
     public Model $virtualModel;
 
-    /**  @var Fields\FieldElement[] */
+    /** @var Fields\FieldElement[] */
     public array $fields = [];
 
-    /**  @var Filterable[] */
+    /** @var Filterable[] */
     private array $filters = [];
 
     private string $prefix;
@@ -54,6 +54,8 @@ class FilterProvider
 
     /**
      * Return prefixed var name.
+     *
+     * @internal
      */
     public function prefixed(string $var): string
     {
@@ -62,6 +64,8 @@ class FilterProvider
 
     /**
      * Return query values for paginator.
+     *
+     * @internal
      */
     public function getValues(): array
     {
@@ -69,10 +73,9 @@ class FilterProvider
     }
 
     /**
-     * @param Builder|Relation $builder
-     * @return static
+     * @internal
      */
-    public function apply($builder)
+    public function apply(Builder $builder)
     {
         $this->appliedFiltersCount = 0;
 
