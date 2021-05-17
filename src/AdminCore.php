@@ -52,7 +52,7 @@ final class AdminCore
             })
             ->map(static function (AbstractResource $resource, $uriKey) {
                 return [
-                    'label' => $resource::pluralLabel(),
+                    'label' => $resource->sidebarLabel(),
                     'uriKey' => $uriKey,
                     'group' => $resource->group,
                     'order' => $resource->orderInSidebar,

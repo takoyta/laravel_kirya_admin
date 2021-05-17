@@ -103,6 +103,16 @@ abstract class AbstractResource
     }
 
     /**
+     * Label in sidebar.
+     *
+     * @return string
+     */
+    public function sidebarLabel(): string
+    {
+        return __(self::pluralLabel());
+    }
+
+    /**
      * Get title of object with resource name.
      *
      * @param Model|string|int $object

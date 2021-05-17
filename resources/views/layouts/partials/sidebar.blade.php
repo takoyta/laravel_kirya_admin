@@ -16,7 +16,7 @@
                     <a
                         href="{{ route('admin.list', $item['uriKey']) }}"
                         class="a @if($currentResourceUriKey === $item['uriKey']) text-success font-weight-bold @endif"
-                    >{!! __($item['label']) !!}</a>
+                    >{!! $item['label'] !!}</a>
                 </div>
             @endforeach
         </div>
