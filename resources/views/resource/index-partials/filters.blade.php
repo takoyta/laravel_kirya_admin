@@ -9,7 +9,7 @@
         <i class="fa fa-filter"></i>
     </button>
 
-    <div class="dropdown-menu width-350px p-0">
+    <div class="dropdown-menu width-350px p-0 js-dropdown-fix">
 
         @foreach($filterProvider->fields as $field)
             <div class="p-2 mt-1 item-heading">

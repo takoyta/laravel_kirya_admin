@@ -26,7 +26,7 @@ $(function () {
     });
 
     /** Prevent close dropdown on click inside */
-    $(document).on('click', '.dropdown-menu', function (e) {
+    $('.js-dropdown-fix').click(function (e) {
         e.stopPropagation();
     });
 
