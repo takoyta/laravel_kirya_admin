@@ -120,6 +120,8 @@ a.panel-button:hover {
     cursor: auto;
     background: #e5e5e5;
     box-shadow: none!important;
+    color: #a3858e;
+    pointer-events: none;
 }
 *::placeholder {
     color: #a3858e;
