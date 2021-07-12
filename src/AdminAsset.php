@@ -40,8 +40,8 @@ REGEXP;
         $this->addScript('https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js');
 
         // include summernote css/js (require twitter bootstrap)
-        $this->addStylesheet('https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote-bs4.css');
-        $this->addScript('https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote-bs4.js');
+        $this->addStylesheet('https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.css');
+        $this->addScript('https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.js');
 
         // Admin scripts
         $this->addScript(dirname(__DIR__) . '/resources/assets/scripts/admin.js');
