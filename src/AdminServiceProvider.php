@@ -33,7 +33,7 @@ class AdminServiceProvider extends BaseServiceProvider
 
         $this->registerViews();
 
-        $this->useBootsrapInPaginator();
+        $this->useBootstrapInPaginator();
     }
 
     protected function registerPublishers(): void
@@ -76,7 +76,7 @@ class AdminServiceProvider extends BaseServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'admin');
     }
 
-    protected function useBootsrapInPaginator(): void
+    protected function useBootstrapInPaginator(): void
     {
         Paginator::useBootstrap();
     }
