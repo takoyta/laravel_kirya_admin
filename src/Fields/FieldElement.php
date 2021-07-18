@@ -14,18 +14,20 @@ abstract class FieldElement extends Element
 
     /**
      * @var Closure|string
+     * @internal
      */
     public $name;
 
+    /** @internal */
     public bool $computed = false;
+    /** @internal */
+    public bool $sortable = false;
+    /** @internal */
+    public string $help = '';
 
     protected ?Closure $displayCallback = null;
     protected ?Closure $resolveCallback = null;
     protected ?Closure $fillCallback = null;
-
-    public bool $sortable = false;
-
-    public string $help = '';
 
     protected function __construct($title, $name = null)
     {
@@ -91,6 +93,7 @@ abstract class FieldElement extends Element
         return $this;
     }
 
+    /** @internal */
     public function displayValue(Model $object)
     {
         if ($this->computed) {
@@ -127,6 +130,7 @@ abstract class FieldElement extends Element
         return $value;
     }
 
+    /** @internal */
     public function fill(Model $object, $value): void
     {
         if ($this->fillCallback) {

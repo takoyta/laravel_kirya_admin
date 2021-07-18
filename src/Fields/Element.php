@@ -10,16 +10,20 @@ abstract class Element
 {
     public $title;
 
-    public $showOnIndex = true;
-    public $showOnDetail = true;
-    public $showOnCreation = true;
-    public $showOnUpdate = true;
+    /** @internal */
+    public bool $showOnIndex = true;
+    /** @internal */
+    public bool $showOnDetail = true;
+    /** @internal */
+    public bool $showOnCreation = true;
+    /** @internal */
+    public bool $showOnUpdate = true;
 
-    protected $formView;
+    protected ?string $formView = null;
     protected AbstractResource $resource;
 
 
-    public static function make(...$name)
+    final public static function make(...$name)
     {
         return new static(...$name);
     }
@@ -35,7 +39,7 @@ abstract class Element
     {
     }
 
-    public function onlyOnIndex()
+    final public function onlyOnIndex()
     {
         $this->showOnIndex = true;
         $this->showOnDetail = false;
@@ -45,7 +49,7 @@ abstract class Element
         return $this;
     }
 
-    public function onlyOnDetail()
+    final public function onlyOnDetail()
     {
         $this->showOnIndex = false;
         $this->showOnDetail = true;
@@ -55,7 +59,7 @@ abstract class Element
         return $this;
     }
 
-    public function onlyOnForms()
+    final public function onlyOnForms()
     {
         $this->showOnIndex = false;
         $this->showOnDetail = false;
@@ -65,21 +69,21 @@ abstract class Element
         return $this;
     }
 
-    public function hideFromIndex()
+    final public function hideFromIndex()
     {
         $this->showOnIndex = false;
 
         return $this;
     }
 
-    public function hideFromDetail()
+    final public function hideFromDetail()
     {
         $this->showOnDetail = false;
 
         return $this;
     }
 
-    public function exceptOnForms()
+    final public function exceptOnForms()
     {
         $this->showOnCreation = false;
         $this->showOnUpdate = false;
@@ -87,21 +91,21 @@ abstract class Element
         return $this;
     }
 
-    public function hideWhenCreating()
+    final public function hideWhenCreating()
     {
         $this->showOnCreation = false;
 
         return $this;
     }
 
-    public function hideWhenUpdating()
+    final public function hideWhenUpdating()
     {
         $this->showOnUpdate = false;
 
         return $this;
     }
 
-    public function formView($view)
+    final public function formView($view)
     {
         $this->formView = $view;
 
@@ -111,31 +115,29 @@ abstract class Element
     /**
      * @internal
      */
-    public function setResource(AbstractResource $resource): void
+    final public function setResource(AbstractResource $resource): void
     {
         $this->resource = $resource;
     }
 
     /**
+     * There is some logic about field on index & detail.
+     *
      * @internal
      */
-    public function displayValue(Model $object)
-    {
-        // There is some logic about field on index & detail
-    }
+    abstract public function displayValue(Model $object);
+
+    /**
+     * There is some logic about field on forms.
+     *
+     * @internal
+     */
+    abstract public function displayForm(Model $object);
 
     /**
      * @internal
      */
-    public function displayForm(Model $object)
-    {
-        // There is some logic about field on forms
-    }
-
-    /**
-     * @internal
-     */
-    protected function resolveFormView()
+    final protected function resolveFormView()
     {
         if (null !== $this->formView) {
             return $this->formView;

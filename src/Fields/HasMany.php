@@ -48,6 +48,11 @@ class HasMany extends Element implements Panelable
             ->with('actions', $this->actions($object));
     }
 
+    public function displayForm(Model $object)
+    {
+        return '';
+    }
+
     private function getRelationQuery(Model $object, FilterProvider $filter)
     {
         $query = $object->{$this->name}()->getQuery();

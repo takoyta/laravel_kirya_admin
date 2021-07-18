@@ -4,7 +4,10 @@ namespace KiryaDev\Admin\Traits;
 
 trait HasRules
 {
+    /** @internal */
     public array $creationRules = [];
+
+    /** @internal */
     public array $updateRules = [];
 
     /**

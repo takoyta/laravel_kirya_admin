@@ -61,4 +61,9 @@ class Table extends Element implements Panelable
             'noData' => $this->noData,
         ]);
     }
+
+    public function displayForm(Model $object)
+    {
+        return '';
+    }
 }

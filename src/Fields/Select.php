@@ -19,19 +19,19 @@ class Select extends FieldElement
         });
     }
 
-    public function options($options)
+    final public function options($options)
     {
         $this->options = $options;
 
         return $this;
     }
 
-    public function rangeOptions($from, $to, $step = 1)
+    final public function rangeOptions($from, $to, $step = 1)
     {
         return $this->options(array_combine($a = range($from, $to, $step), $a));
     }
 
-    public function addNullOption()
+    final public function addNullOption()
     {
         $this->addNullOption = true;
 
