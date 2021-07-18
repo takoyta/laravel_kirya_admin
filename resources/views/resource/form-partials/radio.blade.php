@@ -1,4 +1,4 @@
-@foreach($options as $option => $title)
+@foreach($field->getOptions($object) as $option => $title)
 
     @php($id = $field->name . '__' . $option)
 

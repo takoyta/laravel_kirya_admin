@@ -7,7 +7,8 @@ use Illuminate\Support\Collection;
 
 class Select extends FieldElement
 {
-    protected iterable $options = [];
+    /** @var iterable|callable */
+    protected $options = [];
 
     protected bool $addNullOption = false;
 
