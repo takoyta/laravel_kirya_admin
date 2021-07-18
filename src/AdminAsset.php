@@ -33,7 +33,7 @@ REGEXP;
         // JQuery
         $this->addScript('https://code.jquery.com/jquery-3.3.1.min.js');
         $this->addScript('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.js');
-        $this->addScript('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js');
+        $this->addScript('https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js');
 
         // $.datetimepicker
         $this->addStylesheet('https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css');

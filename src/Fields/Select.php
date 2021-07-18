@@ -7,6 +7,9 @@ use Illuminate\Support\Collection;
 
 class Select extends FieldElement
 {
+    /** @internal */
+    public bool $isMultiple = false;
+
     /** @var iterable|callable */
     protected $options = [];
 
@@ -15,7 +18,10 @@ class Select extends FieldElement
     protected function boot(): void
     {
         $this->displayUsing(function (Model $object, $value) {
-            return $this->options[$value] ?? $value;
+            return implode(
+                ', ',
+                array_map(fn($v) => $this->options[$v] ?? $v, (array) $value)
+            );
         });
     }
 
@@ -34,6 +40,13 @@ class Select extends FieldElement
     final public function addNullOption()
     {
         $this->addNullOption = true;
+
+        return $this;
+    }
+
+    public function multiple($flag = true)
+    {
+        $this->isMultiple = (bool) $flag;
 
         return $this;
     }

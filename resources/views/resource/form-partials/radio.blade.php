@@ -2,12 +2,12 @@
 
     @php($id = $field->name . '__' . $option)
 
-    <div class="custom-control custom-radio mb-2">
+    <div class="custom-control {!! $field->isMultiple ? 'custom-checkbox' : 'custom-radio' !!} mb-2">
         <input
-                type="radio"
-                name="{!! $field->name !!}"
+                type="{!! $field->isMultiple ? 'checkbox' : 'radio' !!}"
+                name="{!! $field->name . ($field->isMultiple ? '[]' : '') !!}"
                 value="{!! $option !!}"
-                @if ($option == $value) checked="checked" @endif
+                @if(in_array($option, (array) $value)) checked="checked" @endif
                 id="{!! $id !!}"
                 class="custom-control-input"
                 @if ($field->disabled) disabled="disabled" @endif

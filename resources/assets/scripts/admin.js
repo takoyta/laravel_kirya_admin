@@ -9,7 +9,22 @@ $(function () {
         },
     });
 
-    $('.js-select2').select2({width: null, minimumResultsForSearch: Infinity});
+    $('.js-select2').each(function() {
+        $(this).select2({
+            width: null,
+            minimumResultsForSearch: Infinity,
+            closeOnSelect: !this.multiple,
+        });
+
+        // Prevents open modal when unselect option
+        $(this).on('select2:unselect', function (event) {
+            if (!event.params.originalEvent) {
+                return;
+            }
+
+            event.params.originalEvent.stopPropagation();
+        });
+    })
 
     $('.js-summernote').summernote({
         fonts: false,
