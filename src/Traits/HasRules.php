@@ -14,7 +14,7 @@ trait HasRules
      * @param string ...$rules
      * @return static
      */
-    public function creationRules(...$rules): HasRules
+    public function creationRules(...$rules)
     {
         $this->creationRules = array_merge($this->creationRules, $rules);
 
