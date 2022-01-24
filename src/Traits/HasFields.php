@@ -188,7 +188,16 @@ trait HasFields
         if ($object->exists && ($id = $object->getKey())) {
             return $fields
                 ->pluck('updateRules', 'name')
-                ->map(static fn($rule) => str_replace('{id}', (string) $id, $rule))
+                // Fill here {id} template in rules
+                ->map(static function(array $rules) use ($id) {
+                    foreach ($rules as &$rule) {
+                        if (is_string($rule)) {
+                            $rule = str_replace('{id}', (string) $id, $rule);
+                        }
+                    }
+
+                    return $rules;
+                })
                 ->all();
         }
 
