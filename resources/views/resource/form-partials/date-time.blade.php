@@ -3,7 +3,7 @@
 <input
         type="text"
         name="{!! $field->name !!}"
-        value="{!! $value ? $value->format($field->format) : null !!}"
+        value="{!! $value instanceof \DateTimeInterface ? $value->format($field->format) : $value !!}"
         placeholder="{!! $field->title !!}"
         class="panel-control"
         autocomplete="off"
