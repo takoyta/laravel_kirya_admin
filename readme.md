@@ -1,12 +1,22 @@
 # Laravel admin
 
+###Installation:
+Add to composer.json:
 
-Installation:
-
+```json
+    "repositories":
+    [
+      {
+        "type": "vcs",
+        "url": "https://github.com/takoyta/laravel_kirya_admin"
+      }
+    ]
 ```
-$ composer require kirya-dev/admin
+Then run:
+```
+$ composer require takoyta/laravel_kirya_admin
 $ mkdir app/Admin
 $ php artisan vendor:publish --provider="KiryaDev\Admin\AdminServiceProvider"
 ```
 
-- Add `/public/static-cache/` to `.gitignore`
+And add `/public/static-cache/` to `.gitignore`

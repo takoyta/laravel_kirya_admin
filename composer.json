@@ -1,6 +1,7 @@
 {
-    "name": "kirya-dev/admin",
+    "name": "takoyta/laravel_kirya_admin",
     "description": "A Laravel Admin",
+    "type": "library",
     "keywords": [
         "laravel",
         "admin"
